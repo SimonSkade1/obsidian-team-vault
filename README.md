@@ -32,7 +32,7 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 1. **The name sets the type**: `,name` = project, `!name` = task, no prefix = note. Renaming changes the type.
 2. **Seven properties**, written by the **New** button when you create a file (see *Creating items*):
 	1. `status` — empty = active; or `in-progress`, `inbox`, `review`, `on-hold`, `done`, `cancelled`, `failed`. Nothing else.
-	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first; a project also counts as the highest priority among the items below it that are in your sections 1–4 (Inbox … Your Tasks), so it depends on who is looking.
+	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first.
 	3. `parent` — one link to its project, `"[[,name]]"`; empty = top of a tree.
 	4. `owner` — who is responsible. `next_action_by` — whose move it is now; empty = the owner's. Lowercase first names, `claude` for the bot.
 	5. `not_before` — a date; the item sits under `10 Later Tasks` (a note: `11 Later Notes`) until then.
@@ -53,7 +53,7 @@ Less important:
 
 ## Your project and task overview: [[me.base]]
 
-1. **Views**: **my overview** = what concerns you, by section (minus your own items under your own projects — those you see in the project's table); **my projects** = the same items including those, grouped by project (`<effective priority> <project> › <sub-project>:`, the project itself is the first row of its group, `no project:` first); **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
+1. **Views**: **my overview** = what concerns you, by section (minus your own items under your own projects — those you see in the project's table); **my projects** = the same items including those, grouped by project (`<priority> <project> › <sub-project>:`, the project itself is the first row of its group, `no project:` first); **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
 2. **Sections**: `1 Inbox`, `2 In Progress`, `3 Review` (status = review) — `4 Your Tasks` (TODO) — `5 Claude` (VNA-scaffold task) — `6 Wait` (someone else's move) — `7 Delegated` (someone else's item under your project) — `8 Subscribed` (you or someone added you in the subscriber column) — `9 Notes` — `10 Later Tasks` (`not_before` in the future) — `11 Later Notes`.
 3. The embedded base at the top of a project note shows the same sections for the project's direct children (i.e. it shows the project tasks that belong to you; other members see their own tasks there). It has no Archived view: finished children stay in the table, at the bottom under `12 Archived` (`13 Archived Notes` for notes), so a project keeps its history in view.
 
