@@ -14,7 +14,13 @@ formulas:
   own: if(owner, owner.toString().lower(), "")
   deferred: if(not_before, date(not_before) > now(), false)
   terminal: status == "done" || status == "cancelled" || status == "failed"
-  effective_priority: if(priority.isEmpty(), 5, priority)
+  top: file
+  lvl1: 'formula.top.backlinks.map(value.asFile()).filter(value.properties.parent.asFile() == formula.top && !["done", "cancelled", "failed"].contains(value.properties.status))'
+  lvl2: 'formula.lvl1.map(value.backlinks).flat().map(value.asFile()).filter(formula.lvl1.contains(value.properties.parent.asFile()) && !["done", "cancelled", "failed"].contains(value.properties.status)).unique()'
+  lvl3: 'formula.lvl2.map(value.backlinks).flat().map(value.asFile()).filter(formula.lvl2.contains(value.properties.parent.asFile()) && !["done", "cancelled", "failed"].contains(value.properties.status)).unique()'
+  lvl4: 'formula.lvl3.map(value.backlinks).flat().map(value.asFile()).filter(formula.lvl3.contains(value.properties.parent.asFile()) && !["done", "cancelled", "failed"].contains(value.properties.status)).unique()'
+  tree: '[formula.lvl1, formula.lvl2, formula.lvl3, formula.lvl4].flat().filter(value.properties.priority).map(value.properties.priority.toString() + "|" + [value.properties.parent.asFile(), value.properties.parent.asFile().properties.parent.asFile(), value.properties.parent.asFile().properties.parent.asFile().properties.parent.asFile(), value.properties.parent.asFile().properties.parent.asFile().properties.parent.asFile().properties.parent.asFile()].filter(value).map(value.path).join("|") + "|")'
+  effective_priority: 'max(if(priority.isEmpty(), 5, priority), formula.tree.filter(value.contains("|" + file.path + "|")).map(number(value.replace(/\|.*/, ""))).reduce(max(acc, value), 0))'
   section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.deferred, "4 Later", if(formula.own == formula.me, "1 Mine", if(formula.own == "", "3 Unassigned", "2 " + formula.own))))'
 properties:
   formula.section:

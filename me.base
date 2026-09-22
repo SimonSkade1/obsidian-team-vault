@@ -21,20 +21,30 @@ formulas:
   parent_own: if(parent && parent.asFile(), if(parent.asFile().properties.owner, parent.asFile().properties.owner.toString().lower(), ""), "")
   delegated: formula.own != formula.me && formula.parent_own == formula.me
   mine: formula.me == "" || formula.own == formula.me || formula.nab == formula.me || formula.subscribed || formula.delegated
-  effective_priority: if(priority.isEmpty(), 5, priority)
+  anc1: if(parent, parent.asFile())
+  anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
+  anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
+  anc4: if(formula.anc3 && formula.anc3.properties.parent, formula.anc3.properties.parent.asFile())
+  top: if(formula.anc4, formula.anc4, if(formula.anc3, formula.anc3, if(formula.anc2, formula.anc2, if(formula.anc1, formula.anc1, file))))
+  lvl1: 'formula.top.backlinks.map(value.asFile()).filter(value.properties.parent.asFile() == formula.top && !["done", "cancelled", "failed"].contains(value.properties.status))'
+  lvl2: 'formula.lvl1.map(value.backlinks).flat().map(value.asFile()).filter(formula.lvl1.contains(value.properties.parent.asFile()) && !["done", "cancelled", "failed"].contains(value.properties.status)).unique()'
+  lvl3: 'formula.lvl2.map(value.backlinks).flat().map(value.asFile()).filter(formula.lvl2.contains(value.properties.parent.asFile()) && !["done", "cancelled", "failed"].contains(value.properties.status)).unique()'
+  lvl4: 'formula.lvl3.map(value.backlinks).flat().map(value.asFile()).filter(formula.lvl3.contains(value.properties.parent.asFile()) && !["done", "cancelled", "failed"].contains(value.properties.status)).unique()'
+  tree: '[formula.lvl1, formula.lvl2, formula.lvl3, formula.lvl4].flat().filter(value.properties.priority).map(value.properties.priority.toString() + "|" + [value.properties.parent.asFile(), value.properties.parent.asFile().properties.parent.asFile(), value.properties.parent.asFile().properties.parent.asFile().properties.parent.asFile(), value.properties.parent.asFile().properties.parent.asFile().properties.parent.asFile().properties.parent.asFile()].filter(value).map(value.path).join("|") + "|")'
+  effective_priority: 'max(if(priority.isEmpty(), 5, priority), formula.tree.filter(value.contains("|" + file.path + "|")).map(number(value.replace(/\|.*/, ""))).reduce(max(acc, value), 0))'
   responsible: formula.own == formula.me || formula.nab == formula.me
   section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.type == "note", "13 Archived Notes", "12 Archived"), if(formula.responsible && status == "in-progress", "2 In Progress", if(formula.responsible && status == "inbox", "1 Inbox", if(formula.responsible && (status == "review" || status == "on-hold"), "3 Review", if(formula.type == "note", if(formula.deferred, "11 Later Notes", "9 Notes"), if(formula.deferred, "10 Later Tasks", if(formula.my_turn, "4 Your Tasks", if(formula.bot, "5 Claude", if(formula.delegated, "7 Delegated", if(formula.subscribed && formula.own != formula.me, "8 Subscribed", "6 Wait")))))))))))'
   parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed"].contains(parent.asFile().properties.status), false)
   nested: formula.own == formula.me && formula.parent_own == formula.me && !formula.parent_terminal
   nested_any: formula.own != "" && formula.own == formula.parent_own && !formula.parent_terminal
-  anc1: if(parent, parent.asFile())
-  anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
-  anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
-  anc4: if(formula.anc3 && formula.anc3.properties.parent, formula.anc3.properties.parent.asFile())
   has_children: file.backlinks.filter(value.asFile() && value.asFile().properties.parent && value.asFile().properties.parent.asFile() == file && !["done", "cancelled", "failed"].contains(value.asFile().properties.status)).length > 0
   is_head: formula.type == "project" && formula.has_children
-  seg_self: if(priority, priority, 5).toString() + " " + file.basename.replace(/^,/, "")
-  anc_path: '[formula.anc4, formula.anc3, formula.anc2, formula.anc1].filter(value).map(if(value.properties.priority, value.properties.priority, 5).toString() + " " + value.basename.replace(/^,/, "")).join(" › ")'
+  seg_self: formula.effective_priority.toString() + " " + file.basename.replace(/^,/, "")
+  seg1: 'if(formula.anc1, max(if(formula.anc1.properties.priority, formula.anc1.properties.priority, 5), formula.tree.filter(value.contains("|" + formula.anc1.path + "|")).map(number(value.replace(/\|.*/, ""))).reduce(max(acc, value), 0)).toString() + " " + formula.anc1.basename.replace(/^,/, ""))'
+  seg2: 'if(formula.anc2, max(if(formula.anc2.properties.priority, formula.anc2.properties.priority, 5), formula.tree.filter(value.contains("|" + formula.anc2.path + "|")).map(number(value.replace(/\|.*/, ""))).reduce(max(acc, value), 0)).toString() + " " + formula.anc2.basename.replace(/^,/, ""))'
+  seg3: 'if(formula.anc3, max(if(formula.anc3.properties.priority, formula.anc3.properties.priority, 5), formula.tree.filter(value.contains("|" + formula.anc3.path + "|")).map(number(value.replace(/\|.*/, ""))).reduce(max(acc, value), 0)).toString() + " " + formula.anc3.basename.replace(/^,/, ""))'
+  seg4: 'if(formula.anc4, max(if(formula.anc4.properties.priority, formula.anc4.properties.priority, 5), formula.tree.filter(value.contains("|" + formula.anc4.path + "|")).map(number(value.replace(/\|.*/, ""))).reduce(max(acc, value), 0)).toString() + " " + formula.anc4.basename.replace(/^,/, ""))'
+  anc_path: '[formula.seg4, formula.seg3, formula.seg2, formula.seg1].filter(value).join(" › ")'
   pgroup: if(formula.is_head, if(formula.anc_path != "", formula.anc_path + " › ", "") + formula.seg_self, if(formula.anc_path != "", formula.anc_path, "no project")) + ":"
 properties:
   formula.section:
