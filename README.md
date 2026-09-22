@@ -1,10 +1,25 @@
-# obsidian-team-vault — team project management with Obsidian, Syncthing and Claude Code
+# obsidian-team-vault — project management with Obsidian and Claude Code, alone or as a team
 
-A template vault for running a team's projects: every project, task and note is one file with seven properties; [Obsidian Bases](https://help.obsidian.md/bases) turn those into per-person dashboards; [Syncthing](https://syncthing.net) syncs the folder hub-and-spoke between members; [Claude Code](https://claude.com/claude-code) works inside it through the [Claudian](https://obsidian.md/plugins?id=claudian) plugin — including the "VNA" scaffold, which writes a project's spec, plans it into children and runs them one by one in fresh subagents. It is the live vault of PauseAI Global's infrastructure team with the content removed.
+A vault for running projects: every project, task and note is one file with seven properties; [Obsidian Bases](https://help.obsidian.md/bases) turn those into per-person dashboards; [Claude Code](https://claude.com/claude-code) works inside the vault through the [Claudian](https://obsidian.md/plugins?id=realclaudian) plugin — including the "VNA" scaffold, which writes a project's spec, plans it into children and runs them one by one in fresh subagents. Optionally a team shares the vault through [Syncthing](https://syncthing.net), with one always-on machine running nightly summaries and cleanup. It is the live vault of PauseAI Global's infrastructure team with the content removed.
 
-1. **Where things are**: this file below the line — how the vault is used day to day; [`INSTALL_AND_SETUP.md`](INSTALL_AND_SETUP.md) — a member's ~10-minute onboarding; [`other-files/VPS_SETUP_INFO.md`](other-files/VPS_SETUP_INFO.md) — the one automation host (git snapshots, nightly summaries, folder cleanup); [`.claude/`](.claude) — the agent's shared instructions, skills and scripts; the `*.base` files — the views; [`shared_templates/`](shared_templates) — the note templates; [`projects-tasks-notes/`](projects-tasks-notes) — empty but for the tutorial project.
-2. **To adopt it**: clone; one person sets up the hub per `VPS_SETUP_INFO.md`, everyone else follows `INSTALL_AND_SETUP.md` — with your names, hub device ID and host in place of the original team's (search for `simon`, `<HUB-DEVICE-ID>`, `<HOST-IP>`; `other-files/check-unassigned.py` has `OWNER = "simon"`). To try it on one machine: open the clone as an Obsidian vault, install Claudian, tell it `complete the setup`.
-3. Exported from that live vault by a script (`other-files/export-public-repo.sh`, not included — it holds the strings it redacts), so the docs name its people and machines. `[[wikilinks]]` resolve in Obsidian, not on GitHub.
+## Setup on one machine (~10 minutes)
+
+1. **Get the files**: **Code → Download ZIP**, or `git clone --depth 1 https://github.com/SimonSkade1/obsidian-team-vault.git my-vault` — then delete the `.git` folder (`rm -rf my-vault/.git`). A vault is not a git checkout: only a team's automation host keeps a repository (its own), and step 4 refuses to run next to one.
+2. **Install** [Obsidian](https://obsidian.md/download) (a current version — the views are Bases, tested on 1.13.7), [Claude Code](https://claude.com/claude-code) (`curl -fsSL https://claude.ai/install.sh | bash`; Windows: `irm https://claude.ai/install.ps1 | iex`) and run `claude` once to log in with your own subscription; have Python 3.8+ (`python3 --version`; Windows: `py -3 --version`). OS details: [`INSTALL_AND_SETUP.md`](INSTALL_AND_SETUP.md) steps 3, 4 and 6.
+3. **Open the folder as a vault** in Obsidian → **Turn on community plugins** → **Browse** → `Claudian` → **Install** → **Enable**. Then **Settings → General → Command line interface** → on: that registers the `obsidian` command Claude uses to reach the running app (to finish step 4, and later to move and rename notes without breaking links).
+4. **Click the robot icon** (Claudian) and type `complete the setup`. It asks for your first name (lowercase — the string used in `owner` and `next_action_by`), then installs Templater, Hidden Folders Access and Outliner, your checked copy of the note templates with the **Alt+P** hotkey, `_local/me.md` (your identity, read by every view) and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
+5. **Read the rest of this file** — below the line is the vault's own README, as members see it (5 minutes) — then do the five-minute exercise in `projects-tasks-notes/Vault tutorial exercise/`.
+
+## Team use (optional)
+
+Several people, one folder, no server software: [`TEAM_SETUP.md`](TEAM_SETUP.md) — Syncthing hub-and-spoke through one always-on machine, which also runs the nightly git snapshot, summaries and cleanup; each member's onboarding is [`INSTALL_AND_SETUP.md`](INSTALL_AND_SETUP.md).
+
+## Where things are
+
+1. `*.base` — the views: `me.base` (your overview), `subtasks.base` (embedded in every project), `major_projects.base`, `recent.base`; [`shared_templates/`](shared_templates) — the note templates; [`projects-tasks-notes/`](projects-tasks-notes) — all items, empty but for the tutorial.
+2. [`.claude/`](.claude) — Claude's shared instructions (`CLAUDE_shared.md`, imported by each member's own `CLAUDE.md`), skills (`vna-*`, `setup-member`, `handoff`, `obsidian-bases`, …), agent definitions and scripts.
+3. [`other-files/`](other-files) — the automation host's scripts, config and its setup doc `VPS_SETUP_INFO.md`.
+4. Exported from the live vault by a script (not included: it holds the strings it redacts), so the docs name that team's people and machines — `TEAM_SETUP.md` lists what to replace. `[[wikilinks]]` resolve in Obsidian, not on GitHub.
 
 ---
 
@@ -38,7 +53,7 @@ Less important:
 
 ## Your project and task overview: [[me.base]]
 
-1. **Views**: **my overview** = what concerns you, by section (minus your own items under your own projects — those you see in the project's table); **my projects** = the same items including those, grouped by project (`<priority> <project> › <sub-project>:`, the project itself is the first row of its group, `(no project):` last); **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
+1. **Views**: **my overview** = what concerns you, by section (minus your own items under your own projects — those you see in the project's table); **my projects** = the same items including those, grouped by project (`<priority> <project> › <sub-project>:`, the project itself is the first row of its group, `no project:` first); **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
 2. **Sections**: `1 Inbox`, `2 In Progress`, `3 Review` (status = review) — `4 Your Tasks` (TODO) — `5 Claude` (VNA-scaffold task) — `6 Wait` (someone else's move) — `7 Delegated` (someone else's item under your project) — `8 Subscribed` (you or someone added you in the subscriber column) — `9 Notes` — `10 Later Tasks` (`not_before` in the future) — `11 Later Notes`.
 3. The embedded base at the top of a project note shows the same sections for the project's direct children (i.e. it shows the project tasks that belong to you; other members see their own tasks there). It has no Archived view: finished children stay in the table, at the bottom under `12 Archived` (`13 Archived Notes` for notes), so a project keeps its history in view.
 
