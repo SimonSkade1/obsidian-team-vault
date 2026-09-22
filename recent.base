@@ -1,0 +1,17 @@
+filters:
+  and:
+    - file.ext == "md"
+properties:
+  file.mtime:
+    displayName: Modified
+views:
+  - type: table
+    name: Recent
+    order:
+      - file.name
+      - file.folder
+      - file.mtime
+    sort:
+      - property: file.mtime
+        direction: DESC
+    limit: 50

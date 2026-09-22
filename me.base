@@ -1,0 +1,261 @@
+filters:
+  and:
+    - file.inFolder("projects-tasks-notes")
+    - file.ext == "md"
+    - '!file.name.contains(".sync-conflict-")'
+    - '!file.path.contains("/handoffs/")'
+    - or:
+        - owner == formula.me
+        - owner != formula.me
+formulas:
+  me: if(file("_local/me.md"), file("_local/me.md").properties.user.toString().lower(), "")
+  nab: if(next_action_by, next_action_by.toString().lower(), "")
+  own: if(owner, owner.toString().lower(), "")
+  type: if(file.name.startsWith(","), "project", if(file.name.startsWith("!"), "task", "note"))
+  deferred: if(not_before, date(not_before) > now(), false)
+  terminal: status == "done" || status == "cancelled" || status == "failed"
+  my_turn: formula.nab == formula.me || (formula.nab == "" && formula.own == formula.me)
+  bot: formula.nab == "claude" || (formula.nab == "" && formula.own == "claude")
+  unassigned: formula.nab == "" && formula.own == ""
+  subscribed: list(subscribers).map(value.toString().lower()).contains(formula.me)
+  parent_own: if(parent && parent.asFile(), if(parent.asFile().properties.owner, parent.asFile().properties.owner.toString().lower(), ""), "")
+  delegated: formula.own != formula.me && formula.parent_own == formula.me
+  mine: formula.me == "" || formula.own == formula.me || formula.nab == formula.me || formula.subscribed || formula.delegated
+  effective_priority: if(priority.isEmpty(), 5, priority)
+  responsible: formula.own == formula.me || formula.nab == formula.me
+  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.type == "note", "13 Archived Notes", "12 Archived"), if(formula.responsible && status == "in-progress", "2 In Progress", if(formula.responsible && status == "inbox", "1 Inbox", if(formula.responsible && (status == "review" || status == "on-hold"), "3 Review", if(formula.type == "note", if(formula.deferred, "11 Later Notes", "9 Notes"), if(formula.deferred, "10 Later Tasks", if(formula.my_turn, "4 Your Tasks", if(formula.bot, "5 Claude", if(formula.delegated, "7 Delegated", if(formula.subscribed && formula.own != formula.me, "8 Subscribed", "6 Wait")))))))))))'
+  parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed"].contains(parent.asFile().properties.status), false)
+  nested: formula.own == formula.me && formula.parent_own == formula.me && !formula.parent_terminal
+  nested_any: formula.own != "" && formula.own == formula.parent_own && !formula.parent_terminal
+  anc1: if(parent, parent.asFile())
+  anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
+  anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
+  anc4: if(formula.anc3 && formula.anc3.properties.parent, formula.anc3.properties.parent.asFile())
+  has_children: file.backlinks.filter(value.asFile() && value.asFile().properties.parent && value.asFile().properties.parent.asFile() == file && !["done", "cancelled", "failed"].contains(value.asFile().properties.status)).length > 0
+  is_head: formula.type == "project" && formula.has_children
+  seg_self: if(priority, priority, 5).toString() + " " + file.basename.replace(/^,/, "")
+  anc_path: '[formula.anc4, formula.anc3, formula.anc2, formula.anc1].filter(value).map(if(value.properties.priority, value.properties.priority, 5).toString() + " " + value.basename.replace(/^,/, "")).join(" › ")'
+  pgroup: if(formula.is_head, if(formula.anc_path != "", formula.anc_path + " › ", "") + formula.seg_self, if(formula.anc_path != "", formula.anc_path, "(no project)")) + ":"
+properties:
+  formula.section:
+    displayName: Section
+  formula.pgroup:
+    displayName: Project
+  formula.type:
+    displayName: Type
+  next_action_by:
+    displayName: Next Action By
+  not_before:
+    displayName: Not Before
+views:
+  - type: table
+    name: my overview
+    filters:
+      and:
+        - formula.mine
+        - "!formula.nested"
+        - "!formula.terminal"
+        - '!file.path.contains("/archived/")'
+    groupBy:
+      property: formula.section
+      direction: ASC
+    order:
+      - file.name
+      - formula.section
+      - status
+      - priority
+      - next_action_by
+      - parent
+      - not_before
+      - owner
+      - subscribers
+      - order
+      - model
+      - effort
+    sort:
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.ctime
+        direction: DESC
+    columnSize:
+      file.name: 502
+      formula.section: 130
+  - type: table
+    name: my projects
+    filters:
+      and:
+        - formula.mine
+        - "!formula.terminal"
+        - '!file.path.contains("/archived/")'
+    groupBy:
+      property: formula.pgroup
+      direction: DESC
+    order:
+      - file.name
+      - formula.section
+      - status
+      - priority
+      - next_action_by
+      - not_before
+      - owner
+      - subscribers
+      - order
+      - model
+      - effort
+    sort:
+      - property: formula.is_head
+        direction: DESC
+      - property: formula.section
+        direction: ASC
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.ctime
+        direction: DESC
+    columnSize:
+      file.name: 502
+      formula.section: 130
+  - type: table
+    name: everyone overview
+    filters:
+      and:
+        - "!formula.nested_any"
+        - "!formula.terminal"
+        - '!file.path.contains("/archived/")'
+    groupBy:
+      property: formula.section
+      direction: ASC
+    order:
+      - file.name
+      - formula.section
+      - status
+      - priority
+      - next_action_by
+      - parent
+      - not_before
+      - owner
+      - subscribers
+      - order
+      - model
+      - effort
+    sort:
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.ctime
+        direction: DESC
+    columnSize:
+      file.name: 340
+      formula.section: 130
+      status: 100
+      priority: 70
+      next_action_by: 120
+      parent: 220
+      not_before: 110
+      owner: 100
+      order: 70
+      model: 90
+      effort: 80
+  - type: table
+    name: everyone projects
+    filters:
+      and:
+        - "!formula.terminal"
+        - '!file.path.contains("/archived/")'
+    groupBy:
+      property: formula.pgroup
+      direction: DESC
+    order:
+      - file.name
+      - formula.section
+      - status
+      - priority
+      - next_action_by
+      - not_before
+      - owner
+      - subscribers
+      - order
+      - model
+      - effort
+    sort:
+      - property: formula.is_head
+        direction: DESC
+      - property: formula.section
+        direction: ASC
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.ctime
+        direction: DESC
+    columnSize:
+      file.name: 340
+      formula.section: 130
+      status: 100
+      priority: 70
+      next_action_by: 120
+      not_before: 110
+      owner: 100
+      order: 70
+      model: 90
+      effort: 80
+  - type: table
+    name: Unassigned
+    filters:
+      and:
+        - formula.unassigned
+        - "!formula.terminal"
+        - '!file.path.contains("/archived/")'
+    order:
+      - file.name
+      - formula.type
+      - status
+      - priority
+      - next_action_by
+      - parent
+      - not_before
+      - owner
+      - file.ctime
+      - order
+      - model
+      - effort
+    sort:
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.ctime
+        direction: DESC
+    columnSize:
+      file.name: 340
+      formula.type: 80
+      status: 100
+      priority: 70
+      next_action_by: 120
+      parent: 220
+      not_before: 110
+      owner: 100
+      order: 70
+      model: 90
+      effort: 80
+  - type: table
+    name: Archived
+    filters:
+      and:
+        - formula.terminal
+    order:
+      - file.name
+      - status
+      - parent
+      - owner
+      - file.mtime
+      - order
+      - model
+      - effort
+    sort:
+      - property: file.mtime
+        direction: DESC
+    limit: 200
+    columnSize:
+      file.name: 340
+      status: 100
+      parent: 220
+      owner: 100
+      order: 70
+      model: 90
+      effort: 80
+newItemFolder: projects-tasks-notes/quick-tasks-and-notes

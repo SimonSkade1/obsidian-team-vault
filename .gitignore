@@ -1,0 +1,43 @@
+# Per-user, never-synced parts of the vault (see .stignore-shared) and local noise.
+
+# Per-user identity note — the bases read the current user from it
+_local/
+
+# Per-user Templater folder — the checked copy of shared_templates/ (JS that runs on every new note)
+local_templates/
+
+# Per-user Obsidian configuration (each member configures their own)
+.obsidian/
+
+# Per-user Claude Code configuration and session state
+.claude/CLAUDE.md
+.claude/settings.local.json
+.claude/projects/
+.claude/handoffs/
+
+# Claudian plugin state (sessions churn every message)
+.claudian/
+
+# Logs of the scheduled review/cleanup jobs (noise, host-local)
+other-files/logs/
+
+# Per-user code checkouts — each member recreates this folder locally
+external-projects/
+
+# Optional per-user private items and their base (never synced, so normally absent here)
+private-projects-tasks-notes/
+private.base
+
+# Syncthing internals and artifacts
+.stignore
+.stfolder/
+.stversions/
+*.sync-conflict-*
+.syncthing.*.tmp
+~syncthing~*.tmp
+
+# Vault trash, OS cruft, Python bytecode caches
+.trash/
+.DS_Store
+__pycache__/
+.claude/skills/about-me/

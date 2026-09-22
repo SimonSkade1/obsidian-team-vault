@@ -1,0 +1,59 @@
+// Shared Syncthing ignore patterns for this vault. This file IS synced and
+// committed; the per-device .stignore is not (Syncthing never syncs .stignore).
+// On every machine, .stignore must exist and contain exactly the line:
+//   #include .stignore-shared
+// Order on a NEW machine (README step 5): let the first sync deliver this file,
+// then write .stignore and reload the ignores — an #include of a file that does
+// not exist yet is an error and stops the folder from syncing at all. Nothing
+// leaks meanwhile: a fresh machine has none of the files below. On a machine
+// that already holds them (the automation host with its .git), write .stignore
+// BEFORE adding the folder.
+// A leading / anchors the pattern to the folder root. Syntax:
+// https://docs.syncthing.net/users/ignoring.html
+
+// Your identity note — the bases read the current user from it, so it must
+// differ per member. Without it every base shows one "create _local/me.md" group.
+/_local
+
+// Your Templater folder: the copy of shared_templates/ the setup made after
+// checking it (README step 7). A template is JavaScript that Templater runs by
+// itself on every note you create, so only the copy checked on this machine
+// runs — never something that just arrived over the network.
+/local_templates
+
+// Per-user Obsidian configuration: themes, hotkeys, plugin choices, plugin
+// data files (which can hold tokens), and workspace layout.
+/.obsidian
+
+// Per-user Claude Code configuration and session state.
+/.claude/CLAUDE.md
+/.claude/settings.local.json
+/.claude/projects
+/.claude/skills/about-me
+/.claude/handoffs
+
+// Claudian plugin state (sessions churn on every message).
+/.claudian
+
+// The vault's git repository lives on the automation host only. File-level
+// sync corrupts git repos, so this must never be shared.
+/.git
+
+// Obsidian's own trash and the logs of the scheduled jobs (host-local noise).
+/.trash
+/other-files/logs
+
+// Your own code checkouts. Per-user in full: they are separate repositories,
+// which never sync file by file. The folder may not exist on every machine.
+/external-projects
+
+// Optional private items: same conventions as projects-tasks-notes/, never
+// synced. private.base is me.base pointed at that folder (setup-member skill).
+/private-projects-tasks-notes
+/private.base
+
+// OS and Python cruft. (?d) lets Syncthing delete these when they block a
+// directory removal.
+(?d).DS_Store
+(?d)Thumbs.db
+(?d)__pycache__

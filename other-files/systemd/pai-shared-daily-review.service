@@ -1,0 +1,14 @@
+# ExecStart must be the absolute path of THIS vault's run-daily-review.sh.
+# Adjust the line below if the vault does not sit at the path shown.
+# Current automation host: hetzner-vps-simon, user simon, vault in $HOME.
+# The timer fires in the HOST's timezone - that VPS runs UTC, so 23:30 UTC.
+[Unit]
+Description=PauseAI Global shared vault — daily review (headless Claude summarizes the git diff)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/PauseAI_Global_shared_vault/other-files/run-daily-review.sh
+TimeoutStartSec=2h
+Nice=10
