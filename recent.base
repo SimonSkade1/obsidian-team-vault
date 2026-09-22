@@ -15,4 +15,3 @@ views:
       - property: file.mtime
         direction: DESC
     limit: 50
-    rowHeight: medium

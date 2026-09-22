@@ -57,7 +57,6 @@ views:
       owner: 100
       next_action_by: 120
       not_before: 110
-    rowHeight: medium
   - type: table
     name: Archived
     filters:
@@ -76,5 +75,4 @@ views:
       file.name: 340
       status: 100
       owner: 100
-    rowHeight: medium
 newItemFolder: projects-tasks-notes
