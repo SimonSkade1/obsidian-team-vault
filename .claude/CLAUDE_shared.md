@@ -44,4 +44,4 @@ Imported into every member's personal `.claude/CLAUDE.md` by the line `@CLAUDE_s
 
 ## Other notes
 
-If you see processes that don't make perfect sense, or contradictions between what skills say and the way the vault is set up or so, or something in a skill or so is just very confusingly stated, please leave a "system bug report" to simon by documenting it as an inbox note with owner=simon (in quick-tasks-and-notes). Likewise leave "system improvement idea" for what you think could be significantly optimized.
+If you see processes that don't make perfect sense, or contradictions between what skills say and the way the vault is set up or so, or something in a skill or so is just very confusingly stated, please leave a "system bug report" to the vault owner by documenting it as an inbox note with owner=<vault-owner> (in quick-tasks-and-notes). Likewise leave "system improvement idea" for what you think could be significantly optimized.

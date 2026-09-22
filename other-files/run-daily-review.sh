@@ -83,7 +83,7 @@ LOG="$LOG_DIR/daily-review-$(date +%Y%m%dT%H%M%S).log"
 exec > >(tee "$LOG") 2>&1
 
 # Single instance (timer + manual invocation can't overlap).
-exec 9>"/tmp/daily-review-pai-shared-vault.lock"
+exec 9>"/tmp/daily-review-team-vault.lock"
 if ! flock -n 9; then
   echo "Another review run is active; exiting."
   exit 0

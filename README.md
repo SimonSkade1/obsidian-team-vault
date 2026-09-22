@@ -4,7 +4,7 @@ A vault for running projects: every project, task and note is one file with seve
 
 ## Setup on one machine (~10 minutes)
 
-1. **Get the files**: **Code → Download ZIP**, or `git clone --depth 1 https://github.com/SimonSkade1/obsidian-team-vault.git my-vault` — then delete the `.git` folder (`rm -rf my-vault/.git`). A vault is not a git checkout: only a team's automation host keeps a repository (its own), and step 4 refuses to run next to one.
+1. **Get the files**: `git clone --depth 1 https://github.com/SimonSkade1/obsidian-team-vault.git` and delete the `.git` folder (`rm -rf obsidian-team-vault/.git`), or **Code → Download ZIP** and unpack it as `obsidian-team-vault`. A vault is not a git checkout: only a team's automation host keeps a repository (its own), and step 4 refuses to run next to one.
 2. **Install** [Obsidian](https://obsidian.md/download) (a current version — the views are Bases, tested on 1.13.7), [Claude Code](https://claude.com/claude-code) (`curl -fsSL https://claude.ai/install.sh | bash`; Windows: `irm https://claude.ai/install.ps1 | iex`) and run `claude` once to log in with your own subscription; have Python 3.8+ (`python3 --version`; Windows: `py -3 --version`). OS details: [`INSTALL_AND_SETUP.md`](INSTALL_AND_SETUP.md) steps 3, 4 and 6.
 3. **Open the folder as a vault** in Obsidian → **Turn on community plugins** → **Browse** → `Claudian` → **Install** → **Enable**. Then **Settings → General → Command line interface** → on: that registers the `obsidian` command Claude uses to reach the running app (to finish step 4, and later to move and rename notes without breaking links).
 4. **Click the robot icon** (Claudian) and type `complete the setup`. It asks for your first name (lowercase — the string used in `owner` and `next_action_by`), then installs Templater, Hidden Folders Access and Outliner, your checked copy of the note templates with the **Alt+P** hotkey, `_local/me.md` (your identity, read by every view) and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
@@ -25,7 +25,7 @@ Several people, one folder, no server software: [`TEAM_SETUP.md`](TEAM_SETUP.md)
 
 # How to use this vault
 
-This is the awesome project management vault for the PauseAI Global Infrastructure team. Machine not set up yet? [[INSTALL_AND_SETUP]] first (~10 minutes, once). Then read this file, and afterwards do the five-minute exercise in [[,Vault tutorial exercise]].
+How the vault is used day to day. Machine not set up yet? First the setup steps above (one machine) or [[INSTALL_AND_SETUP]] (joining a team's vault). Read this file (5 minutes), then do the five-minute exercise in [[,Vault tutorial exercise]].
 
 ## Files
 
@@ -64,7 +64,6 @@ Less important:
 3. **New major project**: press **New** in [[major_projects.base]], then **Alt+P** in the new file as in 1.
 4. **A task that became a project**: rename it with the `,` prefix, then press **Alt+P** with the cursor at the end of the file — that adds the project sections and any missing properties.
 5. **A file made another way** (Ctrl+N, a clicked link to a note that does not exist yet) has no properties: run the command **Templater: Insert properties** (Ctrl+P, type "insert prop") — it adds the seven properties with `owner` = you.
-6. **Set up before 2026-09-21?** Say "complete the setup" to Claude once more: it switches off Templater's old run-on-creation trigger (a security and sync problem in a shared vault) and refreshes your templates.
 
 ## Personal task management
 

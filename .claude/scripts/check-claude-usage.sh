@@ -3,7 +3,7 @@
 #
 # Which account gets reported — first match wins:
 #   1. $CLAUDE_CODE_OAUTH_TOKEN  — explicit token (lent / setup-token accounts).
-#   2. $CLAUDE_CONFIG_DIR        — explicit dir (e.g. the claude-simon2 shell function,
+#   2. $CLAUDE_CONFIG_DIR        — explicit dir (e.g. a shell function for a second account,
 #                                  or a Claudian session that already exports it).
 #   3. CLAUDE_CONFIG_DIR written in Claudian's *shared environment variables*, read from
 #      <vault>/.claudian/claudian-settings.json (the plugin's live settings store;

@@ -7,11 +7,11 @@
 #   other-files/add-member.sh                      show who the folder is shared with
 #
 # Runs against the Syncthing on this machine over its local REST API (no GUI, no
-# ssh tunnel needed). Needs python3 and curl. Override with PAI_FOLDER_ID (folder
-# id, default pai-shared-vault) or STHOME (the directory holding config.xml).
+# ssh tunnel needed). Needs python3 and curl. Override with VAULT_FOLDER_ID (folder
+# id, default team-vault) or STHOME (the directory holding config.xml).
 set -euo pipefail
 
-FOLDER_ID="${PAI_FOLDER_ID:-pai-shared-vault}"
+FOLDER_ID="${VAULT_FOLDER_ID:-team-vault}"
 
 cfg=""
 if [ -n "${STHOME:-}" ]; then

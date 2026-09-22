@@ -61,7 +61,7 @@ mkdir -p "$LOG_DIR"
 exec > >(tee "$LOG_DIR/vault-cleanup-$(date +%Y%m%dT%H%M%S).log") 2>&1
 
 # Single instance (timer chain + manual invocation must not overlap mid-move).
-exec 9>"/tmp/vault-cleanup-pai-shared-vault.lock"
+exec 9>"/tmp/vault-cleanup-team-vault.lock"
 if ! flock -n 9; then
   echo "Another cleanup run is active; exiting."
   exit 0

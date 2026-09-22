@@ -115,7 +115,7 @@ views:
         direction: DESC
     columnSize:
       file.name: 502
-      parent: 220
+      note.parent: 143
       formula.section: 100
     rowHeight: medium
   - type: table
@@ -191,17 +191,9 @@ views:
       - property: file.ctime
         direction: DESC
     columnSize:
-      file.name: 340
-      parent: 220
+      file.name: 433
+      note.parent: 143
       formula.section: 130
-      status: 100
-      priority: 70
-      next_action_by: 120
-      not_before: 110
-      owner: 100
-      order: 70
-      model: 90
-      effort: 80
     rowHeight: medium
   - type: table
     name: Unassigned

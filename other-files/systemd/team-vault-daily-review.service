@@ -1,0 +1,13 @@
+# ExecStart must be the absolute path of THIS vault's run-daily-review.sh.
+# Adjust the line below if the vault does not sit at the path shown.
+# The timer fires in the HOST's timezone (a VPS usually runs UTC).
+[Unit]
+Description=Team vault — daily review (headless Claude summarizes the git diff)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/obsidian-team-vault/other-files/run-daily-review.sh
+TimeoutStartSec=2h
+Nice=10

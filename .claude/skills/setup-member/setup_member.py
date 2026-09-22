@@ -97,7 +97,7 @@ IGNORE_LINE = "#include .stignore-shared"
 # when no name is known anywhere — a CLAUDE.md still carrying that line is a stub to redo.
 NAMELESS = "yourname"
 CLAUDE_MD_INTRO = (
-    "%s. In this vault they work on PauseAI Global; their name in `owner` / "
+    "%s. In this vault they work on their team's projects; their name in `owner` / "
     "`next_action_by` is `%s`.\n\n"
     "(Replace this with a few lines about yourself — what you work on, your background per "
     "field so Claude can skip basics. Durable setup facts (machine, plan tier) belong in "
@@ -141,7 +141,7 @@ def write_json(path, data, dry_run):
 
 
 def fetch(url, timeout=120):
-    req = urllib.request.Request(url, headers={"User-Agent": "pai-shared-vault-setup"})
+    req = urllib.request.Request(url, headers={"User-Agent": "team-vault-setup"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read()
 

@@ -7,10 +7,10 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 # Nightly review pipeline (daily review + every-2nd-day vault cleanup).
-# Unit names are prefixed pai-shared- so they cannot collide with the units of
+# Unit names are prefixed team-vault- so they cannot collide with the units of
 # another vault built from the same template on this host.
-systemctl --user link --force "$HERE/pai-shared-daily-review.service"
-systemctl --user enable --now --force "$HERE/pai-shared-daily-review.timer"
+systemctl --user link --force "$HERE/team-vault-daily-review.service"
+systemctl --user enable --now --force "$HERE/team-vault-daily-review.timer"
 
 systemctl --user daemon-reload
 systemctl --user list-timers --no-pager | head -6

@@ -6,7 +6,7 @@ Copy this file to `.claude/CLAUDE.md` and edit it: that copy is yours alone (nev
 
 ## User
 
-(This section is about you — replace it. A few lines calibrate Claude's answers: your name as it appears in `owner` / `next_action_by`, what you're working on in PauseAI Global, your background per field so Claude can skip basics. Longer-lived setup facts — machine, plan tier, where the vault lives — go into the `about-me` skill instead: `.claude/skills/about-me/SKILL.md`, which is also per-user and unsynced.)
+(This section is about you — replace it. A few lines calibrate Claude's answers: your name as it appears in `owner` / `next_action_by`, what you're working on in this vault, your background per field so Claude can skip basics. Longer-lived setup facts — machine, plan tier, where the vault lives — go into the `about-me` skill instead: `.claude/skills/about-me/SKILL.md`, which is also per-user and unsynced.)
 
 ## Communication preferences
 

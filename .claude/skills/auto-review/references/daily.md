@@ -1,6 +1,6 @@
 # Daily Review
 
-> **Note:** This layer is normally run headless by the scheduled job (`other-files/run-daily-review.sh`, triggered by the `pai-shared-daily-review.timer` systemd user unit on the automation host). It maintains the vault's git repo: one atomic snapshot commit per run. It can also be invoked manually.
+> **Note:** This layer is normally run headless by the scheduled job (`other-files/run-daily-review.sh`, triggered by the `team-vault-daily-review.timer` systemd user unit on the automation host). It maintains the vault's git repo: one atomic snapshot commit per run. It can also be invoked manually.
 
 Generate a structured review note summarizing all changes in the shared vault since the last snapshot commit, read from the git diff.
 
