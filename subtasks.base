@@ -66,6 +66,7 @@ views:
       order: 70
       model: 90
       effort: 80
+    rowHeight: medium
   - type: table
     name: All
     groupBy:
@@ -99,3 +100,4 @@ views:
       order: 70
       model: 90
       effort: 80
+    rowHeight: medium
