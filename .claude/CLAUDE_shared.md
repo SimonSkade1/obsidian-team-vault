@@ -13,7 +13,7 @@ Imported into every member's personal `.claude/CLAUDE.md` by the line `@CLAUDE_s
 
 5. Every file in `projects-tasks-notes/` carries these seven properties, in this order: `status`, `priority`, `parent`, `owner`, `next_action_by`, `not_before`, `subscribers`.
 	1. `status`: empty (= active), `inbox` (captured or proposed, not yet triaged into active work), `in-progress`, `review`, `on-hold`, `done`, `cancelled`, `failed`. Nothing else — section names such as Wait or Delegated are never statuses. `done` / `cancelled` / `failed` are terminal: the item counts as archived.
-	2. `priority`: 1–10, 10 = most important; empty counts as 5; views sort a project by the highest priority set anywhere below it when that is higher (empty ones below don't count). A ranking for humans, never an execution order.
+	2. `priority`: 1–10, 10 = most important; empty counts as 5; views sort a project by the highest priority set anywhere below it when that is higher (empty, finished or parked ones below don't count). A ranking for humans, never an execution order.
 	3. `parent`: quoted wikilink to the single parent, `parent: "[[,name]]"`; empty only at the top of a tree.
 	4. `owner`: the one person responsible — a lowercase first name (`simon`, `matilda`, …) or `claude`. Every item has exactly one. `next_action_by`: whose move it is now; empty = the owner's; may name someone outside the vault. Handing an item back = clearing it.
 	5. `not_before`: date; the item is parked under Later until then.
