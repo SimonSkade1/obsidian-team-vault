@@ -32,7 +32,7 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 1. **The name sets the type**: `,name` = project, `!name` = task, no prefix = note. Renaming changes the type.
 2. **Seven properties**, written by the **New** button when you create a file (see *Creating items*):
 	1. `status` — empty = active; or `in-progress`, `inbox`, `review`, `on-hold`, `done`, `cancelled`, `failed`. Nothing else.
-	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first; a project also counts as the highest priority set on anything below it (empty, finished or parked ones below don't count).
+	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first; a project also counts as the highest priority among the items below it that are in your sections 1–4 (Inbox … Your Tasks), so it depends on who is looking.
 	3. `parent` — one link to its project, `"[[,name]]"`; empty = top of a tree.
 	4. `owner` — who is responsible. `next_action_by` — whose move it is now; empty = the owner's. Lowercase first names, `claude` for the bot.
 	5. `not_before` — a date; the item sits under `10 Later Tasks` (a note: `11 Later Notes`) until then.
