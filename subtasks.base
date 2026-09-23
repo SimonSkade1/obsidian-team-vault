@@ -33,8 +33,10 @@ formulas:
   anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
   anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
   anc4: if(formula.anc3 && formula.anc3.properties.parent, formula.anc3.properties.parent.asFile())
-  has_children: file.backlinks.filter(value.asFile() && value.asFile().properties.parent && value.asFile().properties.parent.asFile() == file && !["done", "cancelled", "failed"].contains(value.asFile().properties.status)).length > 0
-  is_head: formula.type == "project" && formula.has_children
+  in_tree: (formula.anc1 && formula.anc1.asLink() == this) || (formula.anc2 && formula.anc2.asLink() == this) || (formula.anc3 && formula.anc3.asLink() == this) || (formula.anc4 && formula.anc4.asLink() == this)
+  kids: file.backlinks.filter(value.asFile() && value.asFile().properties.parent && value.asFile().properties.parent.asFile() == file)
+  has_children: 'formula.kids.filter(!["done", "cancelled", "failed"].contains(value.asFile().properties.status)).length > 0'
+  is_head: 'formula.type == "project" && if(formula.in_tree && !formula.terminal, formula.kids.length > 0, formula.has_children)'
   seg_self: if(priority, priority, 5).toString() + " " + file.basename.replace(/^,/, "")
   ancs: if(formula.anc1.asLink() == this, [], if(formula.anc2.asLink() == this, [formula.anc1], if(formula.anc3.asLink() == this, [formula.anc2, formula.anc1], if(formula.anc4.asLink() == this, [formula.anc3, formula.anc2, formula.anc1], [formula.anc4, formula.anc3, formula.anc2, formula.anc1]))))
   anc_path: 'formula.ancs.filter(value).map(if(value.properties.priority, value.properties.priority, 5).toString() + " " + value.basename.replace(/^,/, "")).join(" › ")'
@@ -83,7 +85,7 @@ views:
     filters:
       and:
         - formula.mine
-        - "!formula.terminal"
+        - "!(formula.terminal && formula.parent_terminal)"
     groupBy:
       property: formula.pgroup
       direction: DESC
@@ -153,7 +155,7 @@ views:
     name: All tree
     filters:
       and:
-        - "!formula.terminal"
+        - "!(formula.terminal && formula.parent_terminal)"
     groupBy:
       property: formula.pgroup
       direction: DESC
