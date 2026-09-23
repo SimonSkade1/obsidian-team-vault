@@ -48,7 +48,7 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 
 ## Creating items
 
-1. **Inside a project**: press **New** in its subtasks table, type `!name` or `,name` as the name, Enter. The file lands beside the project with `parent` filled and the seven properties set, `owner` = you.
+1. **Inside a project**: press **New** in its subtasks table, type `!name`, `,name`, or `name` (depending on type you want), Enter. The file lands beside the project with `parent` filled and the seven properties set, `owner` = you.
 2. **Relatively small projects/tasks or independent notes**: press **New** in [[me.base]] (lands in `quick-tasks-and-notes/`).
 3. **New major project**: press **New** in [[major_projects.base]].
 
