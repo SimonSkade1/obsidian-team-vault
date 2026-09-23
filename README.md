@@ -34,49 +34,37 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 	1. `status` — empty = active; or `in-progress`, `inbox`, `review`, `on-hold`, `done`, `cancelled`, `failed`. Nothing else.
 	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first.
 	3. `parent` — one link to its project, `"[[,name]]"`; empty = top of a tree.
-	4. `owner` — who is responsible. `next_action_by` — whose move it is now; empty = the owner's. Lowercase first names, `claude` for the bot.
-	5. `not_before` — a date; the item sits under `10 Later Tasks` (a note: `11 Later Notes`) until then.
-	6. `subscribers` — people who want to see it without owning it.
-
-## Folder structure
-
-1. **`projects-tasks-notes/` — every project, task and note.** Parentless projects sit in its root; a project with children gets a folder of the same name (without the `,`) holding them, e.g. `Vault tutorial exercise/`.
-	1. `quick-tasks-and-notes/` — tasks and notes without a parent (where **New** in [[me.base]] creates).
-	2. `handoffs/` — Claude session-handoff notes.
-	3. `archived/` — completed/cancelled/failed projects.
-Less important:
-2. `periodic-auto-summaries/` — generated daily/weekly/monthly/… summaries of what changed in the vault.
-3. `other-files/` — scripts, automation config. also images and audio that don't clearly belong to a project.
-4. `external-projects/` — mostly intended for code repositories. (not synced via syncthing. use github here instead.)
-5. `shared_templates/` — the note templates (synced); `local_templates/` — your running copy (unsynced); `_local/` — your identity note `me.md` (unsynced).
-6. `.claude/` — Claude configuration; `CLAUDE.md` and `settings.local.json` are yours, the rest is shared.
+	4. `owner` — who is responsible. (Lowercase first names.)
+	5. `next_action_by` — whose move it is now; empty = the owner's. 
+	6. `not_before` — a date; the item sits under `10 Later Tasks` (a note: `11 Later Notes`) until then.
+	7. `subscribers` — people who want to see it without owning it.
 
 ## Your project and task overview: [[me.base]]
 
-1. **Views**: **my overview** = what concerns you, by section (minus your own items under your own projects — those you see in the project's table); **my projects** = the same items including those, grouped by project (`<priority> <project> › <sub-project>:`, the project itself is the first row of its group, `no project:` first); **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
-2. **Sections**: `1 Inbox`, `2 In Progress`, `3 Review` (status = review) — `4 Your Tasks` (TODO) — `5 Claude` (VNA-scaffold task) — `6 Wait` (someone else's move) — `7 Delegated` (someone else's item under your project) — `8 Subscribed` (you or someone added you in the subscriber column) — `9 Notes` — `10 Later Tasks` (`not_before` in the future) — `11 Later Notes`.
+1. **Views**: **my overview** = all top-level open items (doesn't include subfiles of your projects) ordered by sections below; **my projects** = all your open items, grouped by project; **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
+2. **Sections**: `1 Inbox`, `2 In Progress`, `3 Review` (status = review) — `4 Your Tasks` (TODO) — `5 Claude` (VNA-scaffold task) — `6 Wait` (someone else's move (`next_action_by`) but you are the owner) — `7 Delegated` (someone else is owner but subproject of your project) — `8 Subscribed` (you are in the subscriber column) — `9 Notes` (files that don't start with `,` or `!`) — `10 Later Tasks` (`not_before` in the future) — `11 Later Notes`.
 3. The embedded base at the top of a project note shows the same sections for the project's direct children (i.e. it shows the project tasks that belong to you; other members see their own tasks there). It has no Archived view: finished children stay in the table, at the bottom under `12 Archived` (`13 Archived Notes` for notes), so a project keeps its history in view.
 
 ## Creating items
 
-1. **Inside a project**: press **New** in its subtasks table, type `!name` or `,name` as the name, Enter. The file lands beside the project with `parent` filled and the seven properties set, `owner` = you. A `,name` needs its sections: open it and press **Alt+P** with the cursor at the end of the file — that adds the standard sections and its own table.
-2. **Small tasks or independent notes**: press **New** in [[me.base]] (lands in `quick-tasks-and-notes/`)
-3. **New major project**: press **New** in [[major_projects.base]], then **Alt+P** in the new file as in 1.
-4. **A task that became a project**: rename it with the `,` prefix, then press **Alt+P** with the cursor at the end of the file — that adds the project sections and any missing properties.
-5. **A file made another way** (Ctrl+N, a clicked link to a note that does not exist yet) has no properties: run the command **Templater: Insert properties** (Ctrl+P, type "insert prop") — it adds the seven properties with `owner` = you.
+1. **Inside a project**: press **New** in its subtasks table, type `!name` or `,name` as the name, Enter. The file lands beside the project with `parent` filled and the seven properties set, `owner` = you.
+2. **Relatively small projects/tasks or independent notes**: press **New** in [[me.base]] (lands in `quick-tasks-and-notes/`).
+3. **New major project**: press **New** in [[major_projects.base]].
+
+Whenever you want to insert the project template (roughly necessary for projects IMO): Press **Alt+P**.
 
 ## Personal task management
 
-1. **Blocked on a project or task because you are waiting for someone?** = set `next_action_by` to that person. This can also be a person who isn't part of this synced obsidian system. The task then shows in the `6 Wait` section (of [[me.base]], or of the project's table if it is your own item under your own project). Make sure you check that section (as well as all sections until `9 Notes`) regularly.
+1. **Blocked on a project or task because you are waiting for someone?** = set `next_action_by` to that person. This can also be a person who isn't part of this synced obsidian system. The task then shows in the `6 Wait` section.
 2. **Only need a project/task/note for later?** Set not-before to the date by when you want to see it properly. Until then it is in the later sections.
 3. **How to use Claude:** have Claudian open and ask it for help with your projects. You **don't** need to set any property such as `next_action_by: claude`; the `5 Claude` section only matters for the VNA scaffold, which plans and queues its own subtasks (see *How we run projects* below).
+4. **Finish** = `status: done` (or `cancelled` / `failed`). Needs a check? `review` plus `next_action_by` = who should look.
 
 ## Working together
 
-1. **Finish** = `status: done` (or `cancelled` / `failed`). Needs a check? `review` plus `next_action_by` = who should look.
-2. **Sharing**: everyone sees everything — keep sensitive material out. Simultaneous edits leave a `…sync-conflict-…` copy the bases hide: search for `sync-conflict` occasionally, merge, delete. No `: ? " * < > |` in names; keep paths short.
-3. **Rule: Everything needs exactly one owner.** 
-4. By default you should **probably only set yourself as the owner**, or if not then communicate to the person that you put them in as owner. (Please do still capture someday-maybe ideas others would be involved in, but perhaps don't capture them as projects directly but rather as actionable-for-you task like "consider whether we should start project X".)
+1. **Sharing**: everyone sees everything — keep sensitive material out.
+2. **Rule: Everything needs exactly one owner.** 
+3. By default you should **probably only set yourself as the owner**, or if not then communicate to the person that you put them in as owner. (Please do still capture someday-maybe ideas others would be involved in, but perhaps don't capture them as projects directly but rather as actionable-for-you task like "consider whether we should start project X".)
 
 ## How we run projects
 
@@ -89,8 +77,22 @@ We work backwards from the goal: purpose → spec → plan → build. The projec
 
 For big projects where creating the spec or planning the subtasks are themselves difficult, you can also add `!create spec for {project}` subtasks where you can take notes, or even `,create spec ...` subprojects (and likewise for `!create plan ...`).
 
-**Claude can run this pipeline for you** (the "VNA scaffold"), for goals too big for one chat:
+**Claude can run this pipeline for you** (the "VNA scaffold"), for goals too big for one claude session:
 
 5. Tell Claude `load vna-spec on [[,name]]`: it asks its questions in one batch, then writes purpose and spec by the principles above. Correct the result: everything is built from it.
-6. Then (perhaps in a new chat): `load vna-controller on [[,name]]`. Claude plans the project into children and works through them one by one, each in a fresh Claude instance. Where it needs you it stops and says so: answer in the item, clear `next_action_by`, tell it to go on. All state is in the files, so a run that stopped early continues when you start it again.
+6. Then (perhaps in a new chat): `load vna-controller on [[,name]]`. Claude plans the project into children and works through them one by one, each in a fresh Claude instance. It also plans checkpoints for where it gives you a summary and asks you for decisions.
 
+## Folder structure
+
+(This section is just for understanding, you don't access files through navigating folders, but through the bases (explained above).)
+
+1. **`projects-tasks-notes/` — every project, task and note.** Parentless projects sit in its root; a project with children gets a folder of the same name (without the `,`) holding them, e.g. `Vault tutorial exercise/`.
+	1. `quick-tasks-and-notes/` — tasks and notes without a parent (where **New** in [[me.base]] creates).
+	2. `handoffs/` — Claude session-handoff notes.
+	3. `archived/` — completed/cancelled/failed projects.
+Less important:
+2. `periodic-auto-summaries/` — generated daily/weekly/monthly/… summaries of what changed in the vault.
+3. `other-files/` — scripts, automation config. also images and audio that don't clearly belong to a project.
+4. `external-projects/` — mostly intended for code repositories. (not synced via syncthing. use github here instead.)
+5. `shared_templates/` — the note templates (synced); `local_templates/` — your running copy (unsynced); `_local/` — your identity note `me.md` (unsynced).
+6. `.claude/` — Claude configuration; `CLAUDE.md` and `settings.local.json` are yours, the rest is shared.
