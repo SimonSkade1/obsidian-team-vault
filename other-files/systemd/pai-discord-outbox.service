@@ -1,0 +1,20 @@
+# Delivers the Discord posts that members' sessions queue as JSON files in
+# other-files/discord/outbox/ (see `discord.py deliver`); the receipt goes to outbox.log.
+# Same host assumptions as pai-discord-bot.service (vault at ~/obsidian-team-vault,
+# token in ~/.claude/channels/discord/.env). Logs: journalctl --user -u pai-discord-outbox -f
+[Unit]
+Description=Team vault — Discord outbox delivery (discord.py deliver --loop 5)
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/obsidian-team-vault
+ExecStart=/usr/bin/python3 %h/obsidian-team-vault/other-files/discord/discord.py deliver --loop 5
+Restart=always
+RestartSec=10
+Nice=5
+
+[Install]
+WantedBy=default.target

@@ -36,11 +36,12 @@ Imported into every member's personal `.claude/CLAUDE.md` by the line `@CLAUDE_s
 11. Multi-step goals run through the VNA orchestration system: the `vna-spec` skill writes the project's purpose and spec with the user, then the `vna-controller` skill, loaded on the project file, runs it.
 12. A member's machine is set up by the `setup-member` skill ("complete the setup"); re-run it after a shared template changes.
 13. `bash .claude/scripts/check-claude-usage.sh` prints Claude plan usage: 5-hour / 7-day windows, per-model limits, extra credits, with reset times. Only run it when asked.
+14. Discord: `python3 other-files/discord/discord.py post <#channel|thread id> "text"` posts as the team's bot from any member's session (queued as a file in `other-files/discord/outbox/`, posted by the automation host within seconds; the command waits for and prints the receipt from `outbox.log`). `channels` and `read` (list channels and threads, read a channel's last messages) need the bot token in `~/.claude/channels/discord/.env`, ask simon; `--help` says the rest.
 
 ## Sharing, sync and git
 
-14. Several people have the same files open through Syncthing. Keep edits small and targeted; never rewrite wholesale a file you did not just create. Everyone reads everything: no secrets or sensitive material in the vault. A `*.sync-conflict-*` file is Syncthing's copy of a collision (hidden by the bases): merge it, then delete it.
-15. Never commit in this vault. Its git repository exists on the automation host only (nightly snapshot, summaries, cleanup), and that host's job commits. Repositories under `external-projects/` are the user's own and unaffected.
+15. Several people have the same files open through Syncthing. Keep edits small and targeted; never rewrite wholesale a file you did not just create. Everyone reads everything: no secrets or sensitive material in the vault. A `*.sync-conflict-*` file is Syncthing's copy of a collision (hidden by the bases): merge it, then delete it.
+16. Never commit in this vault. Its git repository exists on the automation host only (nightly snapshot, summaries, cleanup), and that host's job commits. Repositories under `external-projects/` are the user's own and unaffected.
 
 ## Other notes
 

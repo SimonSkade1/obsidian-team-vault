@@ -38,12 +38,13 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 	5. `next_action_by` — whose move it is now; empty = the owner's. 
 	6. `not_before` — a date; the item sits under `10 Later Tasks` (a note: `11 Later Notes`) until then.
 	7. `subscribers` — people who want to see it without owning it.
+(The last 3 properties (order, model, effort) can be ignored by humans.)
 
 ## Your project and task overview: [[me.base]]
 
 1. **Views**: **my overview** = all top-level open items (doesn't include subfiles of your projects) ordered by sections below; **my projects** = all your open items, grouped by project; **everyone overview** / **everyone projects** = the same for everyone's items; **Archived** = finished (`done`, `cancelled`, `failed`), **Unassigned** = no owner (shouldn't exist but fallback in case it does).
 2. **Sections**: `1 Inbox`, `2 In Progress`, `3 Review` (status = review) — `4 Your Tasks` (TODO) — `5 Claude` (VNA-scaffold task) — `6 Wait` (someone else's move (`next_action_by`) but you are the owner) — `7 Delegated` (someone else is owner but subproject of your project) — `8 Subscribed` (you are in the subscriber column) — `9 Notes` (files that don't start with `,` or `!`) — `10 Later Tasks` (`not_before` in the future) — `11 Later Notes`.
-3. The embedded base at the top of a project note shows the same sections for the project's direct children (i.e. it shows the project tasks that belong to you; other members see their own tasks there). It has no Archived view: finished children stay in the table, at the bottom under `12 Archived` (`13 Archived Notes` for notes), so a project keeps its history in view.
+3. The embedded base at the top of a project note shows the same sections for the project's direct children (i.e. it shows the project tasks that belong to you; other members see their own tasks there); its **Mine tree** / **All tree** views show the whole subtree grouped by sub-project, like **my projects** (open items only). It has no Archived view: finished children stay in the **Mine** / **All** tables, at the bottom under `12 Archived` (`13 Archived Notes` for notes), so a project keeps its history in view.
 
 ## Creating items
 

@@ -37,6 +37,9 @@
     "deny": [
       "WebSearch",
       "WebFetch",
+      "Read(~/.claude/**)",
+      "Read(~/.claude.json)",
+      "Read(~/.ssh/**)",
       "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(ssh:*)",

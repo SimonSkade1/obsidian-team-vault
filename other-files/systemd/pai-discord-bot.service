@@ -1,0 +1,22 @@
+# ExecStart must be the absolute path of THIS vault's other-files/discord/run-bot.sh.
+# Adjust the two paths below if the vault does not sit at the path shown.
+# Current automation host: <HUB-NAME>, user simon, vault in $HOME.
+# Logs: journalctl --user -u pai-discord-bot -f   (the stream-json output of the session is the log)
+[Unit]
+Description=Team vault — Discord bot (headless Claude session with the Discord channel plugin)
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/obsidian-team-vault
+ExecStart=%h/obsidian-team-vault/other-files/discord/run-bot.sh
+# The session ends itself at 04:00 UTC (see run-bot.sh); every exit is followed by a restart.
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+Nice=5
+
+[Install]
+WantedBy=default.target
