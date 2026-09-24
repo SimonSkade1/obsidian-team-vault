@@ -22,7 +22,7 @@ A five-minute exercise for learning the vault: you build one small fictional pro
 2. **Get the questions.** With your tutorial project open, type in the Claudian pane: `copy the questions from [[,Vault tutorial exercise]] into this note`. The `## Questions` from this note appear under its `# Spec`.
 3. **Answer them** — inside your tutorial project only. The answers are files and their properties, not text: create every item with **New** in your tutorial project's subtasks table and name it with the right prefix. Start every name with your own name (`!anna book the stall`): file names must be unique in the whole vault, and your colleagues do this exercise too. Watch your tutorial project's table (view **my project overview**) as you go — each item lands in the section its properties put it in.
 4. **Get graded.** Same note open, in Claudian: `grade this tutorial project against the answer key in [[,Vault tutorial exercise]]`. Fix what it flags if you like.
-5. **Finish.** Set `status: done` on your tutorial project and every open item in it — by hand, or tell Claudian: `mark this tutorial project and everything in it done`. They vanish from [[me.base]]'s views except **Archived**, and drop to the bottom of the table at the top of this note under `12 Archived` (`13 Archived Notes` for notes), next to everyone else's. Leave them there.
+5. **Finish.** Set `status: done` on your tutorial project and every open item in it — by hand, or tell Claudian: `mark this tutorial project and everything in it done`. They vanish from [[me.base]] (except if you select the "Archived" view), and drop to the bottom of the table at the top of this note under `12 Archived` (`13 Archived Notes` for notes), next to everyone else's. Leave them there.
 
 ## Questions
 

@@ -46,15 +46,6 @@ Copy this file to `.claude/CLAUDE.md` and edit it: that copy is yours alone (nev
 2. Subagents should never spawn further subagents themselves unless nesting is explicitly asked for.
 3. For coding repos in `external-projects/`, `git pull` at the start of a session, and make sure you always commit and push changes. (That folder is yours alone; the vault's own repository is the automation host's — see the shared conventions.)
 
-## Principles
-
-(You don't need to follow those unless instructed, but understand the spirit of the importance of simplicity and keeping our goal in mind:)
-1. We work backwards from our goals. We first clarify our goal and then a more detailed vision ("spec") of a project before starting with implementation.
-2. We need to question our requirements and think what is really necessary. Drill down to base requirements by asking why requirements are necessary. Try to delete requirements: Is it really necessary? Are there creative ways to loosen it? Perhaps try to find the core of what we really need.
-3. We want to have only necessary parts. We try to delete non-essential parts from our spec before we start implementing it. We have a bias against adding stuff. 
-4. Simplicity is crucial. We try to find ways things could work in a very natural, clean, and simple way. We want to check whether we can simplify our spec further. Are there different approaches that might be simpler?
-5. Writing concisely (both in the chat and in documents), and especially not writing unnecessary text or items, is very important too. We do not want to clutter context. Prioritize what is important and cut the rest. (Or if instructed externalize the rest into a detailed reference note where it doesn't clutter context of most agents or people).
-
 ## Other notes
 
 If you see text in curly brackets "{}", those are usually notes from the user.
