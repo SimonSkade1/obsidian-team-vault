@@ -52,7 +52,7 @@ properties:
     displayName: Not Before
 views:
   - type: table
-    name: Mine
+    name: my project overview
     filters:
       and:
         - parent == this
@@ -81,7 +81,7 @@ views:
     columnSize:
       file.name: 424
   - type: table
-    name: Mine tree
+    name: my project subprojects
     filters:
       and:
         - formula.mine
@@ -116,7 +116,7 @@ views:
       file.name: 424
       formula.section: 130
   - type: table
-    name: All
+    name: everyone project overview
     filters:
       and:
         - parent == this
@@ -152,7 +152,7 @@ views:
       model: 90
       effort: 80
   - type: table
-    name: All tree
+    name: everyone project subprojects
     filters:
       and:
         - "!(formula.terminal && formula.parent_terminal)"

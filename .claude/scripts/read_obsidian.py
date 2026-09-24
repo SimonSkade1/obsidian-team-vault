@@ -29,7 +29,7 @@ Unresolved / non-Markdown / cyclic embeds get a one-line ⊞ annotation instead.
 
 An embedded base whose filters contain `parent == this` (i.e. subtasks.base) is
 rendered as the embedding note's direct-children table — the same rows the base
-shows a human, without the per-user "Mine" filter and without grouping. Any
+shows a human, without the per-user "my …" filter and without grouping. Any
 other .base embed keeps the one-line ⊞ stub.
 """
 
