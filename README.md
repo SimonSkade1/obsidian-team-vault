@@ -25,7 +25,7 @@ Several people, one folder, no server software: [`TEAM_SETUP.md`](TEAM_SETUP.md)
 
 # How to use this vault
 
-Here is a video on how to use this vault: https://drive.google.com/file/d/1-I16xe_iM7RDpa0E5xWXfsMx_sPfb18L/view?usp=sharing
+Here is a video on how to use this vault (not completely up to date but mostly): https://drive.google.com/file/d/1-I16xe_iM7RDpa0E5xWXfsMx_sPfb18L/view?usp=sharing
 
 How the vault is used day to day. Machine not set up yet? First the setup steps above (one machine) or [[INSTALL_AND_SETUP]] (joining a team's vault). Read this file (5 minutes), then do the five-minute exercise in [[,Vault tutorial exercise]].
 
