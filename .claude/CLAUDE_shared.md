@@ -22,7 +22,7 @@ Imported into every member's personal `.claude/CLAUDE.md` by the line `@CLAUDE_s
 
 ## What the properties do for members
 
-6. Members watch `me.base` (vault-wide) and the `![[subtasks.base]]` embedded in each project (its direct children). Their *Mine* views list, for a member M, the items where M is `owner`, `next_action_by`, a subscriber, or owner of the parent; all views group rows into sections: `1 Inbox`, `2 In Progress`, `3 Review` (M is owner or next actor, and the status is `inbox`, `in-progress`, `review` / `on-hold`) — `4 Your Tasks` (M's move) — `5 Claude` (VNA-scaffold items) — `6 Wait` (another person's move) — `7 Delegated` (someone else's item under M's project) — `8 Subscribed` — `9 Notes` — `10 Later Tasks`, `11 Later Notes` (`not_before` in the future) — `12 Archived`, `13 Archived Notes` (terminal status). First match wins, in the order 12–13, 1–3, 9–11, 4, 5, 7, 8, 6.
+6. Members watch `me.base` (vault-wide) and the `![[subtasks.base]]` embedded in each project (its direct children). Their *my …* views list, for a member M, the items where M is `owner`, `next_action_by`, a subscriber, or owner of the parent; the *overview* views group rows into sections: `1 Inbox`, `2 In Progress`, `3 Review` (M is owner or next actor, and the status is `inbox`, `in-progress`, `review` / `on-hold`) — `4 Your Tasks` (M's move) — `5 Claude` (VNA-scaffold items) — `6 Wait` (another person's move) — `7 Delegated` (someone else's item under M's project) — `8 Subscribed` — `9 Notes` — `10 Later Tasks`, `11 Later Notes` (`not_before` in the future) — `12 Archived`, `13 Archived Notes` (terminal status). First match wins, in the order 12–13, 1–3, 9–11, 4, 5, 7, 8, 6.
 
 ## Creating and finishing items
 
