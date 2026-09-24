@@ -42,15 +42,16 @@ Skipped files stay put and are listed in the run log so the next run picks them 
 
 Read the `status` and `parent` properties across `projects-tasks-notes/`. The tree comes from `parent` alone — a project's subtasks are exactly the files pointing at it, which is also what its embedded base shows.
 
-Where a note's `parent` is evident but missing, fill it in. Where `parent` and the existing folder placement disagree and neither is clearly right, **flag it — do not guess** (§6). Terminated items (`done`/`cancelled`/`failed`) stay in the tree as history; they never trigger moves on their own.
+Where a note's `parent` is evident but missing, fill it in. Where `parent` and the existing folder placement disagree and neither is clearly right, **flag it — do not guess** (§6). Terminated items (`done`/`cancelled`/`failed`) stay in the tree as history; the one move a status triggers is archiving (§4, item 4).
 
 ## 4. Restore the folder structure
 
 Per the folder-structure rule in `.claude/CLAUDE_shared.md` — reread it rather than working from memory. In outline:
 
 1. A `,` project gets its own folder — named like the note without its `,` prefix — as soon as **any** file names it as `parent`, whatever that child's prefix; the folder holds the project note itself plus its children (recursively). Folders are never collapsed back when children terminate.
-2. Notes (no prefix) and `!` tasks go in the folder of the innermost project they are specific to; items serving several projects, or consumed vault-wide by fixed paths in skills and scripts, rise to the nearest common ancestor or the `projects-tasks-notes/` root. Parentless `!` tasks and notes belong in `projects-tasks-notes/quick-tasks-and-notes/`; parentless projects stay in the `projects-tasks-notes/` root.
+2. Notes (no prefix) and `!` tasks go in the folder of the innermost project they are specific to; items serving several projects, or consumed vault-wide by fixed paths in skills and scripts, rise to the nearest common ancestor or the `projects-tasks-notes/` root. Parentless items stay in the `projects-tasks-notes/` root.
 3. `handoffs/` subfolders move with their goal folder. A handoff whose goal has no folder (a goal with no subgoals) belongs in the nearest ancestor `handoffs/`, falling back to `projects-tasks-notes/handoffs/`.
+4. Finished trees go to `projects-tasks-notes/archived/`: a parentless item whose status is terminal moves there, a project with its folder (if it has one) — but only once every `!` task and `,` project in its tree is terminal too (notes don't count), so open work never disappears from the views. A tree in `archived/` that no longer qualifies moves back out.
 
 Use `mv` (wikilinks are basename-based and survive it). Create folders as needed; `mkdir -p` the whole target path in one go.
 
@@ -70,7 +71,7 @@ Two kinds, handled differently:
 1. **Path-style wikilinks** (`[[projects-tasks-notes/foo/bar.md]]`) — rewrite to basename form (`[[bar]]`), which survives all future moves.
 2. **Code/backtick paths** (reading lists in handoffs, script constants, skill instructions) — rewrite to the new path. These stay paths because headless agents open them directly.
 
-Leave `periodic-auto-summaries/` notes alone: they are dated records of what the vault looked like then, not live references.
+Leave `periodic-auto-summaries/` notes and the files in `archived/` alone: they are records of what the vault looked like then, not live references.
 
 Check skills and scripts specifically — `.claude/skills/`, `.claude/references/`, `.claude/scripts/`, `other-files/` and `CLAUDE.md` — since a stale path there breaks automation rather than just a link.
 

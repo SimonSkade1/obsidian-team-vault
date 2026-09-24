@@ -5,7 +5,7 @@ Imported into every member's personal `.claude/CLAUDE.md` by the line `@CLAUDE_s
 ## Files and folders
 
 1. All work lives in `projects-tasks-notes/`, one file per item. The filename prefix sets the type, nothing else does: `,` = project, `!` = task, no prefix = note.
-2. Folder-structure rule: a project with children gets a folder named like it without the `,`, holding the project file and its children (recursively). Parentless projects sit in the `projects-tasks-notes/` root, parentless tasks and notes in `projects-tasks-notes/quick-tasks-and-notes/`. Also there: `handoffs/` (session-handoff notes, `handoff` skill) and `archived/` (finished trees). Place new files by this rule; a nightly cleanup on the automation host fixes what is misplaced.
+2. Folder-structure rule: a project with children gets a folder named like it without the `,`, holding the project file and its children (recursively). Parentless items sit in the `projects-tasks-notes/` root. Also there: `handoffs/` (session-handoff notes, `handoff` skill) and `archived/` (finished parentless items, a project with its folder). Place new files by this rule; a nightly cleanup on the automation host fixes what is misplaced and does the archiving.
 3. Filenames are unique across the vault (wikilinks resolve by basename). Rename and move through Obsidian (link-aware) so children's `parent` links survive; renaming changes the type.
 4. Other folders: `periodic-auto-summaries/` (generated summaries of vault changes), `other-files/` (scripts, automation config, media, the VNA exceptions log), `shared_templates/` (Templater templates that fill the properties of hand-made notes; changed only by agreement). Per-user, never synced, possibly absent on other machines: `_local/`, `local_templates/`, `.obsidian/`, `external-projects/` (the user's own code checkouts), and in `.claude/`: `CLAUDE.md`, `settings.local.json`, `skills/about-me/`. Everything else in `.claude/` is shared.
 
@@ -54,4 +54,4 @@ Imported into every member's personal `.claude/CLAUDE.md` by the line `@CLAUDE_s
 
 ## Other notes
 
-If you see processes that don't make perfect sense, or contradictions between what skills say and the way the vault is set up or so, or something in a skill or so is just very confusingly stated, please leave a "system bug report" to the vault owner by documenting it as an inbox note with owner=<vault-owner> (in quick-tasks-and-notes). Likewise leave "system improvement idea" for what you think could be significantly optimized.
+If you see processes that don't make perfect sense, or contradictions between what skills say and the way the vault is set up or so, or something in a skill or so is just very confusingly stated, please leave a "system bug report" to the vault owner by documenting it as an inbox note with owner=<vault-owner>. Likewise leave "system improvement idea" for what you think could be significantly optimized.

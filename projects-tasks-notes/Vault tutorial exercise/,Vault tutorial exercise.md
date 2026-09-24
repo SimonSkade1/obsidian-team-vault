@@ -43,7 +43,7 @@ For Claude when grading (members: peek if stuck). Read the tutorial project with
 2. Booking task: `not_before` = a date about two weeks from today (→ `10 Later Tasks` until then). Flyer task: `priority: 7` (10 = most important).
 3. Either is fine: a line under the project's `# Notes` (slightly better for three details like these — note files are for longer material, e.g. research done with Claude) or a file with no prefix (a note), child of the tutorial project, with the details in its body (→ `9 Notes`). A `!` file is wrong: it is information, nothing to do.
 4. Flyer task: `status: cancelled` — not `done` (it was not done) and not deleted (the record stays). It disappears from [[me.base]] and drops to `12 Archived` at the bottom of your project's table.
-5. Slips worth naming when you see them: a prefix missing or followed by a space; `parent` typed by hand without quotes and brackets; a name that already exists in the vault; items created with **New** in `me.base` (they land parentless in `quick-tasks-and-notes/`) instead of in the project's table.
+5. Slips worth naming when you see them: a prefix missing or followed by a space; `parent` typed by hand without quotes and brackets; a name that already exists in the vault; items created with **New** in `me.base` (they land parentless in the `projects-tasks-notes/` root) instead of in the project's table.
 
 On `copy the questions …`: paste the `## Questions` section from this note's `# Spec` verbatim — heading included, this answer key excluded — at the end of the tutorial project's `# Spec` section.
 On `mark … everything in it done`: set `status: done` on the tutorial project and on every descendant whose status is not already terminal (leave `cancelled` as it is). Never delete tutorial files.

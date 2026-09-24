@@ -3,8 +3,8 @@
 #
 # Points a session at .claude/references/vault-cleanup.md (a plain reference
 # file, not a skill, so it costs no context until read): restores the
-# projects-tasks-notes/ folder tree from the goal tree, relocates handoffs, and
-# patches the path references the moves break.
+# projects-tasks-notes/ folder tree from the goal tree, relocates handoffs,
+# archives finished trees, and patches the path references the moves break.
 #
 # Chained from run-daily-review.sh BEFORE the review stages and commits, so the
 # moves land in that same night's snapshot and the review note can describe them

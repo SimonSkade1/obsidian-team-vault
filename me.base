@@ -258,4 +258,4 @@ views:
       order: 70
       model: 90
       effort: 80
-newItemFolder: projects-tasks-notes/quick-tasks-and-notes
+newItemFolder: projects-tasks-notes

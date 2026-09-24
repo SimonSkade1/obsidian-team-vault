@@ -10,7 +10,7 @@ me.base: every .md under projects-tasks-notes/ except archived/, handoffs/ and
 It nags once per item: an item already linked from any "!check unassigned
 items …" file (any status, archived ones too) is covered. When new, uncovered
 items exist it appends them to the open check task if there is one, else files
-a new dated task for simon (status inbox, priority 6) in quick-tasks-and-notes/.
+a new dated task for simon (status inbox, priority 6) in projects-tasks-notes/.
 So there is at most one open check task, and nothing is filed twice.
 
 Usage: check-unassigned.py [VAULT_ROOT] [--dry-run]
@@ -26,7 +26,6 @@ TERMINAL = {"done", "cancelled", "failed"}
 CHECK_PREFIX = "!check unassigned items"
 OWNER = "simon"
 PRIORITY = 6
-SUBFOLDER = "quick-tasks-and-notes"
 
 _QUOTED = re.compile(r'^(["\'])(.*)\1$')
 _WIKILINK = re.compile(r"\[\[([^\]]+?)\]\]")
@@ -144,7 +143,7 @@ def main(argv):
         while name in taken:                              # basenames must be unique vault-wide
             name = f"{CHECK_PREFIX} {today} ({k})"
             k += 1
-        target = root / "projects-tasks-notes" / SUBFOLDER / f"{name}.md"
+        target = root / "projects-tasks-notes" / f"{name}.md"
         head = ["---", "status: inbox", f"priority: {PRIORITY}", "parent:", f"owner: {OWNER}",
                 "next_action_by:", "not_before:", "subscribers:", "---",
                 "Give each item an `owner` or a `next_action_by` (or a terminal status); "

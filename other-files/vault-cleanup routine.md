@@ -1,6 +1,6 @@
 # Vault cleanup routine
 
-Restores vault navigation: rebuilds the `projects-tasks-notes/` folder tree from the project tree (`parent` properties), moves handoffs to the project folder they serve, and patches the path-style references the moves break. Members do no folder structuring by hand — this is what puts it back.
+Restores vault navigation: rebuilds the `projects-tasks-notes/` folder tree from the project tree (`parent` properties), moves handoffs to the project folder they serve, moves finished parentless items into `projects-tasks-notes/archived/`, and patches the path-style references the moves break. Members do no folder structuring by hand — this is what puts it back.
 
 ## Where things are
 

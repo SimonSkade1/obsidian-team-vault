@@ -16,7 +16,7 @@ Several people, one folder, no server software: [`TEAM_SETUP.md`](TEAM_SETUP.md)
 
 ## Where things are
 
-1. `*.base` — the views: `me.base` (your overview), `subtasks.base` (embedded in every project), `major_projects.base`, `recent.base`; [`shared_templates/`](shared_templates) — the note templates; [`projects-tasks-notes/`](projects-tasks-notes) — all items, empty but for the tutorial.
+1. `*.base` — the views: `me.base` (your overview), `subtasks.base` (embedded in every project), `recent.base`; [`shared_templates/`](shared_templates) — the note templates; [`projects-tasks-notes/`](projects-tasks-notes) — all items, empty but for the tutorial.
 2. [`.claude/`](.claude) — Claude's shared instructions (`CLAUDE_shared.md`, imported by each member's own `CLAUDE.md`), skills (`vna-*`, `setup-member`, `handoff`, `obsidian-bases`, …), agent definitions and scripts.
 3. [`other-files/`](other-files) — the automation host's scripts, config and its setup doc `VPS_SETUP_INFO.md`.
 4. Exported from the live vault by a script (not included: it holds the strings it redacts), so the docs name that team's people and machines — `TEAM_SETUP.md` lists what to replace. `[[wikilinks]]` resolve in Obsidian, not on GitHub.
@@ -24,6 +24,8 @@ Several people, one folder, no server software: [`TEAM_SETUP.md`](TEAM_SETUP.md)
 ---
 
 # How to use this vault
+
+Here is a video on how to use this vault: https://drive.google.com/file/d/1-I16xe_iM7RDpa0E5xWXfsMx_sPfb18L/view?usp=sharing
 
 How the vault is used day to day. Machine not set up yet? First the setup steps above (one machine) or [[INSTALL_AND_SETUP]] (joining a team's vault). Read this file (5 minutes), then do the five-minute exercise in [[,Vault tutorial exercise]].
 
@@ -49,8 +51,7 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 ## Creating items
 
 1. **Inside a project**: press **New** in its subtasks table, type `!name`, `,name`, or `name` (depending on type you want), Enter. The file lands beside the project with `parent` filled and the seven properties set, `owner` = you.
-2. **Relatively small projects/tasks or independent notes**: press **New** in [[me.base]] (lands in `quick-tasks-and-notes/`).
-3. **New major project**: press **New** in [[major_projects.base]].
+2. **Without a parent** (a new top-level project, or a standalone task or note): press **New** in [[me.base]].
 
 Whenever you want to insert the project template (roughly necessary for projects IMO): Press **Alt+P**.
 
@@ -87,10 +88,9 @@ For big projects where creating the spec or planning the subtasks are themselves
 
 (This section is just for understanding, you don't access files through navigating folders, but through the bases (explained above).)
 
-1. **`projects-tasks-notes/` — every project, task and note.** Parentless projects sit in its root; a project with children gets a folder of the same name (without the `,`) holding them, e.g. `Vault tutorial exercise/`.
-	1. `quick-tasks-and-notes/` — tasks and notes without a parent (where **New** in [[me.base]] creates).
-	2. `handoffs/` — Claude session-handoff notes.
-	3. `archived/` — completed/cancelled/failed projects.
+1. **`projects-tasks-notes/` — every project, task and note.** Items without a parent sit in its root (where **New** in [[me.base]] creates); a project with children gets a folder of the same name (without the `,`) holding them, e.g. `Vault tutorial exercise/`.
+	1. `handoffs/` — Claude session-handoff notes.
+	2. `archived/` — finished (`done` / `cancelled` / `failed`) items without a parent, a project with its folder; the nightly cleanup moves them here.
 Less important:
 2. `periodic-auto-summaries/` — generated daily/weekly/monthly/… summaries of what changed in the vault.
 3. `other-files/` — scripts, automation config. also images and audio that don't clearly belong to a project.
