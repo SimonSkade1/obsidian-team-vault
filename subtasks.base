@@ -67,10 +67,10 @@ views:
       - file.name
       - status
       - priority
+      - owner
       - stakeholder
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -96,10 +96,10 @@ views:
       - formula.section
       - status
       - priority
+      - owner
       - stakeholder
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -128,10 +128,10 @@ views:
       - file.name
       - status
       - priority
+      - owner
       - stakeholder
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -164,10 +164,10 @@ views:
       - formula.section
       - status
       - priority
+      - owner
       - stakeholder
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model

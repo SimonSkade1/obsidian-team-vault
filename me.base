@@ -72,11 +72,11 @@ views:
       - formula.section
       - status
       - priority
+      - owner
       - stakeholder
       - parent
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -106,10 +106,10 @@ views:
       - formula.section
       - status
       - priority
+      - owner
       - stakeholder
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -144,11 +144,11 @@ views:
       - formula.section
       - status
       - priority
+      - owner
       - stakeholder
       - parent
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -185,10 +185,10 @@ views:
       - formula.section
       - status
       - priority
+      - owner
       - stakeholder
       - not_before
       - dependencies
-      - owner
       - due
       - subscribers
       - model
@@ -218,11 +218,11 @@ views:
       - formula.type
       - status
       - priority
+      - owner
       - stakeholder
       - parent
       - not_before
       - dependencies
-      - owner
       - due
       - file.ctime
       - model
