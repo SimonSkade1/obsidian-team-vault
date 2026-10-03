@@ -15,7 +15,7 @@ As a subagent (your prompt says so) you run on a spec task; the project to spec 
 
 ## Method
 
-1. Read the project, the spec task if there is one, and the Purpose and Spec of the project's parent; more only where you need it.
+1. Read the project, the spec task if there is one, an answered checkpoint in its `dependencies`, and the Purpose and Spec of the project's parent; more only where you need it.
 2. **Work backwards from the goal.** Start with the purpose: why the project exists and what success is. Make the success criteria concrete enough to check, and put the most important first. Everything in the spec has to serve the purpose.
 3. **Question every requirement** before you build on it: ask why it is needed until you reach the base requirement, then try to delete or loosen it. Which criteria does success really need? A requirement that the user wrote is theirs to drop: where you would drop one, ask them instead.
 4. Draft the spec.
@@ -40,9 +40,9 @@ Stop when the spec is ready:
 Ask the user only about real decisions: those that change the spec and that you cannot settle from the files or by thinking. Give each question a recommendation, and ask in one batch where possible. Whether and how you ask depends on how you run (interactively or as a subagent) and on the project's `owner`, unless the spec task's input prompt says otherwise:
 
 1. **Interactive**: ask in chat, then write.
-2. **Subagent, human owner**: write what is settled; you may draft the rest as if your recommendations were accepted. Put your questions into the spec task, in the checkpoint question format, set its `next_action_by` to the user and leave its `status` empty: the spec task is now a checkpoint. Once the user has handed it back, the controller runs it again, and that new run folds the answers into the spec and finishes. Where the input prompt asks for a check-in on the written spec, do the same: write the spec, and put your request to check it into the spec task in place of the questions.
+2. **Subagent, human owner**: write what is settled; you may draft the rest as if your recommendations were accepted. Put your questions into a checkpoint file (Formats 4), a child of the project, in the checkpoint question format; add it to the spec task's `dependencies` and leave the spec task's `status` empty. Once the user has set the checkpoint `done`, the controller runs the spec task again, and that new run folds the answers into the spec and finishes. Where the input prompt asks for a check-in on the written spec, do the same: write the spec, and put your request to check it into the checkpoint in place of the questions.
 3. **Subagent, Claude's project**: decide yourself, from the context and constraints in the existing notes.
 
 ## At the end
 
-Set the spec task `done`, unless you left it as a checkpoint. In an interactive run there may be no spec task; where one exists, set it `done` too. Reasons worth keeping go into the spec task, not into the spec; leaving nothing there is fine. Leave the project's `status` alone and create no files.
+Set the spec task `done`, unless you left it waiting for a checkpoint. In an interactive run there may be no spec task; where one exists, set it `done` too. Reasons worth keeping go into the spec task, not into the spec; leaving nothing there is fine. Leave the project's `status` alone and create no files besides that checkpoint.

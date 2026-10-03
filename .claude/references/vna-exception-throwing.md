@@ -28,4 +28,4 @@ Write `# Exception` into the file you were run on, above every other heading. Fo
 **What would unblock it:** <as questions in the checkpoint question format, where there are any>
 ```
 
-Set the file's `status` to `on-hold` and end your run. Change no other property: whether the user is needed is the controller's call.
+Set the file's `status` to `exception` and end your run. Change no other property: whether the user is needed is the controller's call.

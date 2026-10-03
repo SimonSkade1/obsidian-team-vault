@@ -21,7 +21,9 @@ scan for code a template has no business containing; a shared template that chan
 the copy is printed as a diff and copied only with `--update-templates`. Templater's
 creation trigger (device-local, Obsidian's localStorage) is switched OFF through the
 `obsidian` CLI when there is one — see act_creation_trigger for why; a new note's `owner`
-and `parent` come from the bases' New button instead. Where a Linux package has put the
+and `parent` come from the bases' New button instead. The member's file in `vault-members/`
+(synced) is created empty if missing: the others' links to them in `owner`, `stakeholder`
+and `subscribers` resolve to it. Where a Linux package has put the
 desktop app in front of that CLI on Claudian's PATH, a PATH line in Claudian's settings
 puts the CLI first again.
 
@@ -69,6 +71,7 @@ ASSETS = ["main.js", "manifest.json", "styles.css"]
 
 SHARED_TEMPLATES = "shared_templates"   # the synced source, changed by agreement
 LOCAL_TEMPLATES = "local_templates"     # the folder Templater runs: this machine's checked copy, never synced
+MEMBERS = "vault-members"               # one file per member, named by their `user`; synced
 TEMPLATE_PATH = LOCAL_TEMPLATES + "/project.md"
 PROPERTIES_TEMPLATE = LOCAL_TEMPLATES + "/properties.md"
 LEGACY_TEMPLATE_PATH = "templates/project.md"  # the shared folder was Templater's folder until 2026-09-20
@@ -98,7 +101,7 @@ IGNORE_LINE = "#include .stignore-shared"
 NAMELESS = "yourname"
 CLAUDE_MD_INTRO = (
     "%s. In this vault they work on their team's projects; their name in `owner` / "
-    "`next_action_by` is `%s`.\n\n"
+    "`stakeholder` is `%s`.\n\n"
     "(Replace this with a few lines about yourself — what you work on, your background per "
     "field so Claude can skip basics. Durable setup facts (machine, plan tier) belong in "
     "`.claude/skills/about-me/SKILL.md`, also yours alone.)\n")
@@ -170,10 +173,24 @@ def act_identity(name, dry_run):
     write_text(path, (
         "---\nuser: %s\n---\n\n"
         "Identity note for this device. Every base reads `user` from here to decide which rows "
-        "are \"Mine\" — keep it to your own lowercase first name, the same string the others type "
-        "into `owner` and `next_action_by`. Never synced (`.stignore-shared`) and never committed.\n"
+        "are \"Mine\" — keep it to your own lowercase first name: it names your file in `vault-members/`, "
+        "which the others link in `owner`, `stakeholder` and `subscribers`. Never synced "
+        "(`.stignore-shared`) and never committed.\n"
     ) % name, dry_run)
     return report("_local/me.md", DONE, "user: " + name)
+
+
+def act_member_file(name, dry_run):
+    """`vault-members/<user>.md`, empty: what the others' links to this member resolve to."""
+    name = identity_name() or name  # as in act_claude_md: the name the bases read wins
+    if not name:
+        return report(MEMBERS + "/<you>.md", NEEDS_YOU, "re-run with --name <your first name>")
+    folder = VAULT / MEMBERS
+    have = [f.name for f in folder.glob("*.md") if f.stem.lower() == name.lower()] if folder.is_dir() else []
+    if have:
+        return report(MEMBERS + "/" + have[0], ALREADY, "your member file")
+    write_text(folder / (name + ".md"), "", dry_run)
+    return report(MEMBERS + "/" + name + ".md", DONE, "your member file: links to you now resolve")
 
 
 def act_plugin(plugin, dry_run):
@@ -618,6 +635,7 @@ def main():
 
     act_syncthing_ignores(args.dry_run)  # first: nothing private below is written before its ignore line
     act_identity(name, args.dry_run)
+    act_member_file(name, args.dry_run)
     for plugin in PLUGINS:
         act_plugin(plugin, args.dry_run)
     act_local_templates(args.update_templates, args.dry_run)

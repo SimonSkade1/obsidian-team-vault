@@ -1,16 +1,23 @@
 ---
 parent: "[[,Vault tutorial exercise]]"
-status: done
+owner: "[[harry]]"
+status: cancelled
 priority:
 stakeholder: "[[simon]]"
 not_before:
-owner: "[[simon]]"
 subscribers:
+model:
+effort:
 ---
+
 
 ![[subtasks.base]]
 
+
+
 # Purpose / goal clarification / success criteria
+
+
 
 # Spec
 
@@ -25,4 +32,7 @@ Kim is a fictional PauseAI volunteer without access to this vault
 
 # Notes
 
-fair details: organiser Sam Lee, stall fee 40 €, setup from 8:00. 
+
+
+
+

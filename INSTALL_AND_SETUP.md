@@ -1,3 +1,32 @@
+---
+status:
+priority:
+parent:
+owner: harry
+stakeholder:
+not_before:
+subscribers:
+---
+
+
+![[subtasks.base]]
+
+
+
+# Purpose / goal clarification / success criteria
+
+
+
+# Spec
+
+
+
+# Notes
+
+
+
+
+
 # Install and setup
 
 One-time setup of the vault on your machine (~10 minutes). Once it is done, read [[README]].
@@ -21,7 +50,7 @@ Three programs: **Syncthing** keeps the folder in sync, **Obsidian** edits it, *
 	   
 5. After the hub admin has had time to invite your device ID which you shared in step 2: **Accept the share — two notifications, one after the other**, at the top of the Syncthing page.
 	1. **New Device** — *Device "<HUB-NAME>" (<HUB-DEVICE-ID-PREFIX>-… at …) wants to connect.* → **Add Device** → **Save**. The ID must begin with `<HUB-DEVICE-ID-PREFIX>`; that is the hub. *Worked when:* within a minute or so a second notification, **New Folder**, appears — that offer can only reach you after the device is accepted, so this is also how you know the first half took.
-	2. **New Folder** — *<HUB-NAME> wants to share folder "Team vault" (team-vault).* → **Add** → set **Folder Path** to where the vault should live (`~/obsidian-team-vault`, on Windows `C:\Users\<you>\obsidian-team-vault`). Not inside Dropbox, iCloud Drive, OneDrive or another Syncthing folder — two sync tools over one folder fight each other. Leave the rest of the dialog untouched, the **Ignore Patterns** tab included → **Save**.
+	2. **New Folder** — *<HUB-NAME> wants to share folder "Team vault" (team-vault).* → **Add** → set **Folder Path** to where the vault should live (`~/obsidian-team-vault`, on Windows `C:\Users\<you>\obsidian-team-vault`). Syncthing cannot change it afterwards; if it came out wrong, the folder's **Edit** → **Remove** (the files stay on disk), then **Actions** → **Restart**, and the offer comes back. Not inside Dropbox, iCloud Drive, OneDrive or another Syncthing folder — two sync tools over one folder fight each other. Leave the rest of the dialog untouched, the **Ignore Patterns** tab included → **Save**.
 	3. That hub is the only device you ever add for this folder, and you share it with nobody else: everything travels through it. The price is that while the hub is down your edits wait on your machine and arrive when it is back (nothing is lost); the gain is a single authoritative copy, and no laptop that was offline for a month pushing its stale deletions onto everyone.
 	4. *Worked when:* the folder says **Up to Date** and the path you chose contains `README.md`, `me.base` and `projects-tasks-notes/`. Wait for **Up to Date** before step 6 — the later steps rely on files that have to arrive first.
 6. **Open the folder as a vault and install Claudian.** Obsidian → *Open folder as vault* → the path from step 5. A **Restricted mode** dialog appears → **Turn on community plugins**; if no dialog shows up — you had opened this folder before, or clicked the dialog away once — **Settings → Community plugins → Turn on community plugins** is the same switch. On that same page: **Browse** → search `Claudian` → **Install** → **Enable**. Then **Settings → General → Command line interface** → switch it on and follow its prompt to register the `obsidian` command (macOS asks for your password): that is how Claude reaches the running Obsidian — to finish step 7 by itself and, later, to move and rename notes without breaking links.
@@ -32,6 +61,6 @@ Three programs: **Syncthing** keeps the folder in sync, **Obsidian** edits it, *
 	complete the setup
 	```
 
-	It asks for your first name — lowercase, the name the others will type into `owner` and `next_action_by` — and then does everything that can be done from disk: the Syncthing ignore line that keeps your private files off the network, Templater, Hidden Folders Access (shows the `.claude` folder) and Outliner downloaded into the vault's plugin folder and switched on, your own checked copy of the note templates with the **Alt+P** hotkey for the project sections (a new note's `owner` and `parent` are filled by the **New** button itself), new notes landing beside the note you are in, your identity note `_local/me.md`, and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
+	It asks for your first name — lowercase; it names your file in `vault-members/`, which the others link in `owner` and `stakeholder` — and then does everything that can be done from disk: the Syncthing ignore line that keeps your private files off the network, Templater, Hidden Folders Access (shows the `.claude` folder) and Outliner downloaded into the vault's plugin folder and switched on, your own checked copy of the note templates with the **Alt+P** hotkey for the project sections (a new note's `owner` and `parent` are filled by the **New** button itself), new notes landing beside the note you are in, your identity note `_local/me.md` and member file `vault-members/<name>.md`, and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
 8. **Read [[README]]** (5 minutes), then do the five-minute exercise in [[,Vault tutorial exercise]].
 9. **Optional — a private folder.** Tell Claude `set up my private folder`: it creates `private-projects-tasks-notes/` and `private.base` (`me.base` over that folder). Same prefixes, properties and subtasks table as the shared tree, but both stay on this machine — the shared ignore list excludes them — so nobody else sees them and nothing backs them up. Don't link to a private note from a shared one: the others would see its title as a dead link.

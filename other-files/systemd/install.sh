@@ -17,6 +17,9 @@ systemctl --user enable --now --force "$HERE/team-vault-daily-review.timer"
 systemctl --user enable --now --force "$HERE/pai-discord-bot.service"
 # Discord outbox: posts what members' sessions queue in other-files/discord/outbox/ (discord.py deliver).
 systemctl --user enable --now --force "$HERE/pai-discord-outbox.service"
+# Discord watchdog: checks the bot session every 5 min, restarts it, DMs simon (other-files/discord/watchdog.py).
+systemctl --user link --force "$HERE/pai-discord-watchdog.service"
+systemctl --user enable --now --force "$HERE/pai-discord-watchdog.timer"
 
 systemctl --user daemon-reload
 systemctl --user list-timers --no-pager | head -6

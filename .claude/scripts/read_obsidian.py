@@ -50,8 +50,10 @@ CHILD_FOLDERS = ('projects-tasks-notes',               # the only folders with p
 CONFLICT_MARK = '.sync-conflict-'                      # Syncthing conflict copies (hidden, as in the base)
 FM_RE = re.compile(r'^([A-Za-z_][\w-]*)\s*:\s*(.*)$')
 WIKILINK_RE = re.compile(r'^!?\[\[(.+?)\]\]$')
-CHILD_HEADERS = ('order', 'type', 'status', 'owner', 'next_action_by',
-                 'priority', 'not_before', 'model', 'effort', 'path')
+LIST_ITEM_RE = re.compile(r'^\s*-\s+(.*)$')            # a block-list item in the frontmatter
+CHILD_HEADERS = ('#', 'blocked', 'type', 'status', 'owner', 'stakeholder',
+                 'priority', 'not_before', 'due', 'model', 'effort', 'dependencies', 'path')
+FINISHED = ('review', 'done', 'cancelled', 'failed')     # a dependency blocks only while unfinished
 
 KIND_BY_EXT = {'.md': 'md', '.pdf': 'pdf', '.canvas': 'canvas', '.base': 'base'}
 for _e in ('.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.avif', '.bmp'):
@@ -209,6 +211,7 @@ class Ctx:
         self.chain = []  # (relpath_lower, subpath_norm) currently open
         self.child_index = None  # [(relpath, frontmatter)] of notes with a `parent`
         self.parent_cache = {}   # link text -> resolved relpath | None
+        self.fm_cache = {}       # relpath -> frontmatter, for notes outside child_index
 
 
 def read_lines(path: Path):
@@ -239,21 +242,32 @@ def render_lines(relpath, lines, start, end, prefix, ctx, depth, out):
         out.append(f"{prefix}    …\t(+{end - shown_end} more lines truncated — Read {relpath} for the rest)")
 
 
+def unquote(val):
+    val = val.strip()
+    if len(val) > 1 and val[0] == val[-1] and val[0] in '"\'':
+        val = val[1:-1]
+    return val
+
+
 def parse_frontmatter(lines):
-    """Top-level scalar frontmatter keys (every key used below is a scalar)."""
-    fm = {}
+    """Top-level frontmatter keys: scalars, and lists (block `- x` items or inline `[a, b]`)."""
+    fm, key = {}, None
     if not (lines and lines[0].strip() == '---'):
         return fm
     for line in lines[1:]:
         if line.strip() in ('---', '...'):
             break
         m = FM_RE.match(line)
-        if not m:
+        if m:
+            key, val = m.group(1).lower(), m.group(2).strip()
+            if val.startswith('[') and not val.startswith('[['):      # inline list
+                fm[key] = [unquote(x) for x in re.findall(r'"[^"]*"|\'[^\']*\'|[^,]+', val[1:-1]) if x.strip()]
+            else:
+                fm[key] = unquote(val)
             continue
-        val = m.group(2).strip()
-        if len(val) > 1 and val[0] == val[-1] and val[0] in '"\'':
-            val = val[1:-1]
-        fm[m.group(1).lower()] = val
+        item = LIST_ITEM_RE.match(line)
+        if item and key is not None and (fm[key] == '' or isinstance(fm[key], list)):
+            fm[key] = (fm[key] or []) + [unquote(item.group(1))]
     return fm
 
 
@@ -278,6 +292,8 @@ def child_index(ctx):
                 fm = parse_frontmatter(read_lines(ctx.vault / f))
             except OSError:
                 continue
+            if isinstance(fm.get('parent'), list):            # a link written as a one-item list
+                fm['parent'] = fm['parent'][0] if fm['parent'] else ''
             if fm.get('parent', '').strip():
                 idx.append((f, fm))
         ctx.child_index = idx
@@ -285,7 +301,7 @@ def child_index(ctx):
 
 
 def children_of(ctx, rel):
-    """(rows, hidden_conflict_copies) — direct children of `rel`, sorted by order ASC."""
+    """(rows, hidden_conflict_copies, cycle) — direct children of `rel`, in topological order of `dependencies`."""
     rows, hidden = [], 0
     stem = rel.stem.lower()
     for f, fm in child_index(ctx):
@@ -302,15 +318,67 @@ def children_of(ctx, rel):
             hidden += 1
             continue
         rows.append((f, fm))
+    rows.sort(key=lambda item: item[0].name.lower())
+    deps = [sibling_deps(ctx, rows, fm) for _, fm in rows]
+    left, ordered, cycle = set(range(len(rows))), [], False   # Kahn's algorithm; ties by name (rows are sorted)
+    while left:
+        ready = [i for i in sorted(left) if not (deps[i] & left)]
+        if not ready:                                       # a cycle: the rest by name, flagged in the header
+            ready, cycle = sorted(left), True
+        ordered.append(ready[0])
+        left.remove(ready[0])
+    return [rows[i] for i in ordered], hidden, cycle
 
-    def key(item):
-        f, fm = item
+
+def dependency_targets(fm):
+    """The `dependencies` links of a note as link targets."""
+    d = fm.get('dependencies', '')
+    if isinstance(d, str):
+        d = [d] if d.strip() else []
+    return [t for t in (link_target(x) for x in d) if t]
+
+
+def resolve_dependency(ctx, target):
+    """(relpath|None, frontmatter) of a dependency link."""
+    if target.lower() not in ctx.parent_cache:
+        ctx.parent_cache[target.lower()] = resolve_target(target, ctx.files)[0]
+    res = ctx.parent_cache[target.lower()]
+    if res is None:
+        return None, {}
+    if res not in ctx.fm_cache:
         try:
-            return (0, float(fm.get('order', '')), f.name.lower())
-        except ValueError:
-            return (1, 0.0, f.name.lower())   # missing / unparsable order sorts last
+            ctx.fm_cache[res] = parse_frontmatter(read_lines(ctx.vault / res))
+        except OSError:
+            ctx.fm_cache[res] = {}
+    return res, ctx.fm_cache[res]
 
-    return sorted(rows, key=key), hidden
+
+def sibling_deps(ctx, rows, fm):
+    """Indices into `rows` of the dependencies that are siblings."""
+    paths = {f: i for i, (f, _) in enumerate(rows)}
+    out = set()
+    for t in dependency_targets(fm):
+        res, _ = resolve_dependency(ctx, t)
+        if res in paths:
+            out.add(paths[res])
+    return out
+
+
+def dependency_cells(ctx, rows):
+    """Per row: (blocked, dependencies) cells — siblings shown as their row number."""
+    paths = {f: i for i, (f, _) in enumerate(rows)}
+    cells = []
+    for _, fm in rows:
+        shown, blocked = [], False
+        for t in dependency_targets(fm):
+            res, dfm = resolve_dependency(ctx, t)
+            if res is None:
+                shown.append('?' + t.rsplit('/', 1)[-1])          # broken link: does not block
+                continue
+            shown.append(str(paths[res] + 1) if res in paths else f'[[{res.stem}]]')
+            blocked = blocked or (dfm.get('status', '') or '').strip().lower() not in FINISHED
+        cells.append(('yes' if blocked else '-', ', '.join(shown) or '-'))
+    return cells
 
 
 def child_type(name):
@@ -318,22 +386,23 @@ def child_type(name):
 
 
 def render_children(raw, base_rel, note_rel, prefix, ctx, out):
-    rows, hidden = children_of(ctx, note_rel)
+    rows, hidden, cycle = children_of(ctx, note_rel)
     extra = f" · {hidden} .sync-conflict- {'copy' if hidden == 1 else 'copies'} hidden" if hidden else ''
+    extra += ' · DEPENDENCY CYCLE among these rows' if cycle else ''
     if not rows:
         out.append(f"{prefix}⊞ ![[{raw}]] → {base_rel}: no note has \"{note_rel.stem}\" as its `parent`{extra}")
         return
     table = [CHILD_HEADERS]
-    for f, fm in rows:
-        table.append((fm.get('order', '') or '-', child_type(f.name),
+    for i, ((f, fm), (blocked, deps)) in enumerate(zip(rows, dependency_cells(ctx, rows)), 1):
+        table.append((str(i), blocked, child_type(f.name),
                       fm.get('status', '') or '-', fm.get('owner', '') or '-',
-                      fm.get('next_action_by', '') or '-', fm.get('priority', '') or '-',
-                      fm.get('not_before', '') or '-', fm.get('model', '') or '-',
-                      fm.get('effort', '') or '-', str(f)))
+                      fm.get('stakeholder', '') or '-', fm.get('priority', '') or '-',
+                      fm.get('not_before', '') or '-', fm.get('due', '') or '-', fm.get('model', '') or '-',
+                      fm.get('effort', '') or '-', deps, str(f)))
     w = [max(len(r[c]) for r in table) for c in range(len(CHILD_HEADERS))]
-    right = {CHILD_HEADERS.index('order'), CHILD_HEADERS.index('priority')}
+    right = {CHILD_HEADERS.index('#'), CHILD_HEADERS.index('priority')}
     out.append(f"{prefix}┌─ {base_rel} → {len(rows)} direct children of \"{note_rel.stem}\" "
-               f"(sorted by order ASC, no order last){extra}")
+               f"(topological order){extra}")
     for r in table:
         out.append(f"{prefix}│ " + '  '.join((c.rjust(n) if i in right else c.ljust(n))
                                              for i, (c, n) in enumerate(zip(r, w))).rstrip())

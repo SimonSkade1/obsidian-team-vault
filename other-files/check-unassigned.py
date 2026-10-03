@@ -2,9 +2,8 @@
 """check-unassigned.py — nightly check of the shared vault for unassigned items.
 
 Run by other-files/run-daily-review.sh on the automation host (pure python, no
-Claude). An item is unassigned when its `owner` and `next_action_by` are both
-empty and its status is not terminal — exactly the "Unassigned" view of
-me.base: every .md under projects-tasks-notes/ except archived/, handoffs/ and
+Claude). An item is unassigned when its `owner` is empty and its status is
+not terminal — exactly the "Unassigned" view of me.base: every .md under projects-tasks-notes/ except archived/, handoffs/ and
 .sync-conflict- copies; a file without properties counts too.
 
 It nags once per item: an item already linked from any "!check unassigned
@@ -34,7 +33,7 @@ _LIST_ITEM = re.compile(r"^(\d+)\. ")
 
 def frontmatter(text):
     """Minimal YAML front matter: top-level `key: scalar` pairs -> {key: str}.
-    Empty / null / block values become "". Enough for status, owner, next_action_by."""
+    Empty / null / block values become "". Enough for status and owner."""
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return {}
@@ -121,8 +120,7 @@ def main(argv):
     in_scope = [f for f in files if "/archived/" not in "/" + f[0] and "/handoffs/" not in "/" + f[0]
                 and ".sync-conflict-" not in f[1] and not f[1].startswith(CHECK_PREFIX)]
     unassigned = [f for f in in_scope
-                  if f[2].get("owner", "") == "" and f[2].get("next_action_by", "") == ""
-                  and f[2].get("status", "").lower() not in TERMINAL]
+                  if f[2].get("owner", "") == "" and f[2].get("status", "").lower() not in TERMINAL]
     new = [f for f in unassigned if f[1] not in covered]
     n, m = len(unassigned), len(new)
     today = datetime.date.today().isoformat()
@@ -144,9 +142,9 @@ def main(argv):
             name = f"{CHECK_PREFIX} {today} ({k})"
             k += 1
         target = root / "projects-tasks-notes" / f"{name}.md"
-        head = ["---", "status: inbox", f"priority: {PRIORITY}", "parent:", f"owner: {OWNER}",
-                "next_action_by:", "not_before:", "subscribers:", "---",
-                "Give each item an `owner` or a `next_action_by` (or a terminal status); "
+        head = ["---", "status: inbox", f"priority: {PRIORITY}", "parent:", f'owner: "[[{OWNER}]]"',
+                f'stakeholder: "[[{OWNER}]]"', "not_before:", "dependencies:", "due:", "subscribers:", "---",
+                "Give each item an `owner` (or a terminal status); "
                 "the **Unassigned** view of `me.base` lists all of them live. "
                 f"New on {today} ({m} item{'s' if m != 1 else ''}):", ""]
         content = "\n".join(head + [f"{i}. {item_line(b, fm)}" for i, (_, b, fm, _) in enumerate(new, 1)]) + "\n"

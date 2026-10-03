@@ -17,6 +17,18 @@ Restart=always
 RestartSec=10
 TimeoutStopSec=30
 Nice=5
+# CLAUDE_BIN pins the Claude Code version the bot runs (run-bot.sh; a missing path falls back to `claude`).
+# Pinned to 2.1.273 on 2026-09-25: from 2.1.274 on, a -p session started with --channels never registers
+# the plugin's channel notifications (its init line shows the MCP server "pending", the MCP log has no
+# "Channel notifications registered" line), so messages get the 👀 but never reach the session.
+# To try a newer version: change the path (versions: ls ~/.local/share/claude/versions/), then
+# `bash other-files/systemd/install.sh && systemctl --user daemon-reload && systemctl --user restart pai-discord-bot`
+# and check that `other-files/discord/run-bot.sh log --since -5min` shows mcp: plugin:discord:discord=connected.
+Environment=CLAUDE_BIN=%h/.local/share/claude/versions/2.1.273
+# Credentials: CLAUDE_CODE_OAUTH_TOKEN from claude.env, a one-year token from `claude setup-token`
+# (VPS_SETUP_INFO.md 21.3) — the browser login expires after 30 days, which silently killed the bot on
+# 2026-09-28. The `-` keeps the unit starting without the file (then the host's `claude login` is used).
+EnvironmentFile=-%h/.claude/channels/discord/claude.env
 
 [Install]
 WantedBy=default.target
