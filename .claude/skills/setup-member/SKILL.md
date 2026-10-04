@@ -9,7 +9,7 @@ A new member has synced the vault, opened it in Obsidian with Claudian installed
 
 ## Do this
 
-1. **Ask for the first name — but only if `_local/me.md` is missing.** One word, lowercase: it names their file in `vault-members/`, which the others link in `owner` and `stakeholder`. Any alphabet: `joão`, `zoë`, `łukasz` are fine — the bases compare `user` as plain text. That is the only question this setup needs; decide everything else from the vault.
+1. **Ask for the first name — but only if `_local/me.md` is missing.** One word, lowercase: it names their file in `vault-members/`, which the others link in `owner` and `reviewer`. Any alphabet: `joão`, `zoë`, `łukasz` are fine — the bases compare `user` as plain text. That is the only question this setup needs; decide everything else from the vault.
 2. **Run the script** from the vault root:
 
 	```

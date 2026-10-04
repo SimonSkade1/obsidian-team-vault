@@ -19,9 +19,11 @@ Normally this runs headless every 2nd day, chained from `other-files/run-vault-c
 Read the log note's last run date. Then find what changed since:
 
 ```bash
-git log --since="<last run date>" --name-only --pretty=format: | sort -u
+git log --since="<last run date> 00:00" --name-only --pretty=format: | sort -u
 git status --porcelain
 ```
+
+Keep the `00:00`: git reads a bare date as that day at the current clock time, which can miss commits made after the last run on its day, such as the snapshot holding the files it skipped (§2).
 
 Never commit — the daily-review automation owns this repo's commit cadence.
 
@@ -36,13 +38,15 @@ Moving a file out from under an open editor loses work, and other members' open 
 1. Notes open in an Obsidian tab on this machine, from `.obsidian/workspace.json` (`leaf` nodes → `state.state.file`; `lastOpenFiles` is history, not open tabs, and entries ending `.tmp.<digits>.<hex>` are sync artifacts to ignore).
 2. Anything modified in the last 30 minutes (`find … -mmin -30`) — modification times are synced, so this is the one check that covers the other members.
 
-Skipped files stay put and are listed in the run log so the next run picks them up. Skipping is cheap; a lost edit is not.
+Skipped files stay put and out of the log note (§6): a recent edit falls inside the next run's scope anyway (§1), and a file skipped only for an open tab may wait until it or a neighbor changes again. Skipping is cheap; a lost edit is not.
 
 ## 3. Build the goal tree
 
 Read the `status` and `parent` properties across `projects-tasks-notes/`. The tree comes from `parent` alone — a project's subtasks are exactly the files pointing at it, which is also what its embedded base shows.
 
 Where a note's `parent` is evident but missing, fill it in. Where `parent` and the existing folder placement disagree and neither is clearly right, **flag it — do not guess** (§6). Terminated items (`done`/`cancelled`/`failed`) stay in the tree as history; the one move a status triggers is archiving (§4, item 4).
+
+**Temporary, until 2026-11-01 (then delete this paragraph):** the property `stakeholder` was renamed `reviewer` on 2026-10-04, and members whose templates are older still write `stakeholder:`. Grep `projects-tasks-notes/` for frontmatter lines starting `stakeholder:` and, in each file not excluded by §2, rename that key to `reviewer:` in place (same position, value unchanged). If a file already has a `reviewer:` key, flag it instead (§6).
 
 ## 4. Restore the folder structure
 

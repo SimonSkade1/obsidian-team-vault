@@ -3,7 +3,7 @@ parent: "[[harry tutorial PauseAI info stall]]"
 owner: "[[harry]]"
 status: cancelled
 priority:
-stakeholder: "[[harry]]"
+reviewer: "[[harry]]"
 not_before:
 subscribers:
 model:

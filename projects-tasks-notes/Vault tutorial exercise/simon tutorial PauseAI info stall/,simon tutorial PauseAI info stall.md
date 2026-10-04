@@ -2,7 +2,7 @@
 parent: "[[,Vault tutorial exercise]]"
 status: done
 priority:
-stakeholder: "[[simon]]"
+reviewer: "[[simon]]"
 not_before:
 owner: "[[simon]]"
 subscribers:

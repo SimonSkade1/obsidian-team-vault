@@ -2,7 +2,7 @@
 parent: "[[,simon tutorial PauseAI info stall]]"
 status: done
 priority:
-stakeholder: "[[simon]]"
+reviewer: "[[simon]]"
 not_before:
 owner: "[[simon]]"
 subscribers:

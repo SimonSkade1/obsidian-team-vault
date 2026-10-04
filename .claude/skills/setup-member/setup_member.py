@@ -22,7 +22,7 @@ the copy is printed as a diff and copied only with `--update-templates`. Templat
 creation trigger (device-local, Obsidian's localStorage) is switched OFF through the
 `obsidian` CLI when there is one — see act_creation_trigger for why; a new note's `owner`
 and `parent` come from the bases' New button instead. The member's file in `vault-members/`
-(synced) is created empty if missing: the others' links to them in `owner`, `stakeholder`
+(synced) is created empty if missing: the others' links to them in `owner`, `reviewer`
 and `subscribers` resolve to it. Where a Linux package has put the
 desktop app in front of that CLI on Claudian's PATH, a PATH line in Claudian's settings
 puts the CLI first again.
@@ -101,7 +101,7 @@ IGNORE_LINE = "#include .stignore-shared"
 NAMELESS = "yourname"
 CLAUDE_MD_INTRO = (
     "%s. In this vault they work on their team's projects; their name in `owner` / "
-    "`stakeholder` is `%s`.\n\n"
+    "`reviewer` is `%s`.\n\n"
     "(Replace this with a few lines about yourself — what you work on, your background per "
     "field so Claude can skip basics. Durable setup facts (machine, plan tier) belong in "
     "`.claude/skills/about-me/SKILL.md`, also yours alone.)\n")
@@ -174,7 +174,7 @@ def act_identity(name, dry_run):
         "---\nuser: %s\n---\n\n"
         "Identity note for this device. Every base reads `user` from here to decide which rows "
         "are \"Mine\" — keep it to your own lowercase first name: it names your file in `vault-members/`, "
-        "which the others link in `owner`, `stakeholder` and `subscribers`. Never synced "
+        "which the others link in `owner`, `reviewer` and `subscribers`. Never synced "
         "(`.stignore-shared`) and never committed.\n"
     ) % name, dry_run)
     return report("_local/me.md", DONE, "user: " + name)

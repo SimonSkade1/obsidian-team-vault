@@ -51,7 +51,7 @@ CONFLICT_MARK = '.sync-conflict-'                      # Syncthing conflict copi
 FM_RE = re.compile(r'^([A-Za-z_][\w-]*)\s*:\s*(.*)$')
 WIKILINK_RE = re.compile(r'^!?\[\[(.+?)\]\]$')
 LIST_ITEM_RE = re.compile(r'^\s*-\s+(.*)$')            # a block-list item in the frontmatter
-CHILD_HEADERS = ('#', 'blocked', 'type', 'status', 'owner', 'stakeholder',
+CHILD_HEADERS = ('#', 'blocked', 'type', 'status', 'owner', 'reviewer',
                  'priority', 'not_before', 'due', 'model', 'effort', 'dependencies', 'path')
 FINISHED = ('review', 'done', 'cancelled', 'failed')     # a dependency blocks only while unfinished
 
@@ -396,7 +396,7 @@ def render_children(raw, base_rel, note_rel, prefix, ctx, out):
     for i, ((f, fm), (blocked, deps)) in enumerate(zip(rows, dependency_cells(ctx, rows)), 1):
         table.append((str(i), blocked, child_type(f.name),
                       fm.get('status', '') or '-', fm.get('owner', '') or '-',
-                      fm.get('stakeholder', '') or '-', fm.get('priority', '') or '-',
+                      fm.get('reviewer', '') or '-', fm.get('priority', '') or '-',
                       fm.get('not_before', '') or '-', fm.get('due', '') or '-', fm.get('model', '') or '-',
                       fm.get('effort', '') or '-', deps, str(f)))
     w = [max(len(r[c]) for r in table) for c in range(len(CHILD_HEADERS))]

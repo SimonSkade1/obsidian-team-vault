@@ -143,7 +143,7 @@ def main(argv):
             k += 1
         target = root / "projects-tasks-notes" / f"{name}.md"
         head = ["---", "status: inbox", f"priority: {PRIORITY}", "parent:", f'owner: "[[{OWNER}]]"',
-                f'stakeholder: "[[{OWNER}]]"', "not_before:", "dependencies:", "due:", "subscribers:", "---",
+                f'reviewer: "[[{OWNER}]]"', "not_before:", "dependencies:", "due:", "subscribers:", "---",
                 "Give each item an `owner` (or a terminal status); "
                 "the **Unassigned** view of `me.base` lists all of them live. "
                 f"New on {today} ({m} item{'s' if m != 1 else ''}):", ""]

@@ -3,7 +3,7 @@ status:
 priority: 1
 parent:
 owner: "[[simon]]"
-stakeholder: "[[simon]]"
+reviewer: "[[simon]]"
 not_before: 2099-01-01
 subscribers:
 ---
@@ -18,7 +18,7 @@ A five-minute exercise for learning the vault: you build one small fictional pro
 
 ## Steps
 
-1. **Make your tutorial project.** Press **New** in the table at the top of this note → type `,<yourname> tutorial PauseAI info stall` → **Enter**, then open it, click at the end of the note and press **Alt+P**. It now has the nine properties (`owner` = you, `stakeholder` = simon, who owns this project, `parent` = this project), its own subtasks table at the top and the three standard sections below it — it is the fictional stall project the questions are about. (No `owner`, or everything in `me.base` under `0 ⚠ create _local/me.md`? Your setup is incomplete — finish [[INSTALL_AND_SETUP]] step 7 and start over.)
+1. **Make your tutorial project.** Press **New** in the table at the top of this note → type `,<yourname> tutorial PauseAI info stall` → **Enter**, then open it, click at the end of the note and press **Alt+P**. It now has the nine properties (`owner` = you, `reviewer` = simon, who owns this project, `parent` = this project), its own subtasks table at the top and the three standard sections below it — it is the fictional stall project the questions are about. (No `owner`, or everything in `me.base` under `0 ⚠ create _local/me.md`? Your setup is incomplete — finish [[INSTALL_AND_SETUP]] step 7 and start over.)
 2. **Get the questions.** With your tutorial project open, type in the Claudian pane: `copy the questions from [[,Vault tutorial exercise]] into this note`. The `## Questions` from this note appear under its `# Spec`.
 3. **Answer them** — inside your tutorial project only. The answers are files and their properties, not text: create every item with **New** in your tutorial project's subtasks table and name it with the right prefix. Start every name with your own name (`!anna book the stall`): file names must be unique in the whole vault, and your colleagues do this exercise too. Watch your tutorial project's table (view **my project overview**) as you go — each item lands in the section its properties put it in.
 4. **Get graded.** Same note open, in Claudian: `grade this tutorial project against the answer key in [[,Vault tutorial exercise]]`. Fix what it flags if you like.
@@ -39,7 +39,7 @@ Kim is a fictional PauseAI volunteer without access to this vault
 
 For Claude when grading (members: peek if stuck). Read the tutorial project with `python3 .claude/scripts/read_obsidian.py "<note>"` (its table lists the children), check the points below, and reply in chat with one numbered line per question: what is right, what is off, and the exact fix. Do not edit the member's files unless asked. Names may differ; structure and properties are what count. Also check the tutorial project itself: `parent` = `[[,Vault tutorial exercise]]`, `owner` = the member, every file with all nine properties and `parent` a quoted wikilink.
 
-1. Three `!` files (tasks) whose `parent` is the tutorial project. Booking task: `owner` and `stakeholder` = the member (→ `4 Your Tasks`). Flyer task: the same (→ `4 Your Tasks`): planning to do something with Claude changes no property, you just ask Claudian when you get to it ([[README]], *Personal task management* 3). `owner: claude` (→ `5 Delegated`) is not wrong, only unnecessary: say so, but do not count it against them. Volunteers task: `owner: kim`, `stakeholder` = the member (→ `5 Delegated`: Kim does it, the member tracks it; [[README]], *Personal task management* 1). A link `"[[kim]]"` is fine too if Kim will likely join the vault — it stays unresolved, as Kim has no file in `vault-members/`. `owner` = the member is wrong: the task would sit in their `4 Your Tasks` although Kim does it.
+1. Three `!` files (tasks) whose `parent` is the tutorial project. Booking task: `owner` and `reviewer` = the member (→ `4 Your Tasks`). Flyer task: the same (→ `4 Your Tasks`): planning to do something with Claude changes no property, you just ask Claudian when you get to it ([[README]], *Personal task management* 3). `owner: claude` (→ `5 Delegated`) is not wrong, only unnecessary: say so, but do not count it against them. Volunteers task: `owner: kim`, `reviewer` = the member (→ `5 Delegated`: Kim does it, the member tracks it; [[README]], *Personal task management* 1). A link `"[[kim]]"` is fine too if Kim will likely join the vault — it stays unresolved, as Kim has no file in `vault-members/`. `owner` = the member is wrong: the task would sit in their `4 Your Tasks` although Kim does it.
 2. Booking task: `not_before` = a date about two weeks from today (→ `10 Later Tasks` until then). Flyer task: `priority: 7` (10 = most important).
 3. Either is fine: a line under the project's `# Notes` (slightly better for three details like these — note files are for longer material, e.g. research done with Claude) or a file with no prefix (a note), child of the tutorial project, with the details in its body (→ `8 Notes`). A `!` file is wrong: it is information, nothing to do.
 4. Flyer task: `status: cancelled` — not `done` (it was not done) and not deleted (the record stays). It disappears from [[me.base]] and drops to `12 Archived` at the bottom of your project's table.

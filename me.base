@@ -8,12 +8,12 @@ filters:
         - owner == if(formula.me, link(formula.me), "")
         - owner != if(formula.me, link(formula.me), "")
     - or:
-        - stakeholder == if(formula.me, link(formula.me), "")
-        - stakeholder != if(formula.me, link(formula.me), "")
+        - reviewer == if(formula.me, link(formula.me), "")
+        - reviewer != if(formula.me, link(formula.me), "")
 formulas:
   me: if(file("_local/me.md"), file("_local/me.md").properties.user.toString().lower(), "")
   own: if(owner, owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), "")
-  stk: if(stakeholder, stakeholder.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
+  rev: if(reviewer, reviewer.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
   type: if(file.name.startsWith(","), "project", if(file.name.startsWith("!"), "task", "note"))
   deferred: if(not_before, date(not_before) > now(), false)
   blocked: if(dependencies, list(dependencies).filter(value.asFile() && !["done", "cancelled", "failed", "review"].contains(value.asFile().properties.status)).length > 0, false)
@@ -21,15 +21,15 @@ formulas:
   unassigned: formula.own == ""
   subscribed: list(subscribers).map(value.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower()).contains(formula.me)
   parent_own: if(parent && parent.asFile(), if(parent.asFile().properties.owner, parent.asFile().properties.owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), ""), "")
-  delegated: formula.stk == formula.me && formula.own != formula.me
-  mine: formula.me == "" || formula.own == formula.me || formula.stk == formula.me || formula.subscribed
+  delegated: formula.rev == formula.me && formula.own != formula.me
+  mine: formula.me == "" || formula.own == formula.me || formula.rev == formula.me || formula.subscribed
   effective_priority: if(priority.isEmpty(), 5, priority) + if(due, if(date(due) < today(), 2, if(date(due) < today() + "1 day", 1, 0)), 0)
-  archived_subscribed: formula.terminal && formula.subscribed && formula.own != formula.me && formula.stk != formula.me
-  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "14 Archived Subscribed", if(formula.type == "note", "13 Archived Notes", "12 Archived")), if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.stk == formula.me && status == "review", "3 Review", if(formula.own == formula.me && status == "review", "6 Awaiting Review", if(formula.type == "note", if(formula.deferred, "11 Later Notes", "8 Notes"), if(formula.blocked, "9 Blocked", if(formula.deferred, "10 Later Tasks", if(formula.own == formula.me, "4 Your Tasks", if(formula.stk == formula.me, "5 Delegated", if(formula.subscribed, "7 Subscribed", "15 Others"))))))))))))'
+  archived_subscribed: formula.terminal && formula.subscribed && formula.own != formula.me && formula.rev != formula.me
+  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "14 Archived Subscribed", if(formula.type == "note", "13 Archived Notes", "12 Archived")), if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.rev == formula.me && status == "review", "3 Review", if(formula.own == formula.me && status == "review", "6 Awaiting Review", if(formula.type == "note", if(formula.deferred, "11 Later Notes", "8 Notes"), if(formula.blocked, "9 Blocked", if(formula.deferred, "10 Later Tasks", if(formula.own == formula.me, "4 Your Tasks", if(formula.rev == formula.me, "5 Delegated", if(formula.subscribed, "7 Subscribed", "15 Others"))))))))))))'
   parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed"].contains(parent.asFile().properties.status), false)
   nested: formula.own == formula.me && formula.parent_own == formula.me && !formula.parent_terminal
   nested_any: formula.own != "" && formula.own == formula.parent_own && !formula.parent_terminal
-  status_sec: (formula.own == formula.me && ["inbox", "in-progress", "review"].contains(status)) || (formula.stk == formula.me && status == "review")
+  status_sec: (formula.own == formula.me && ["inbox", "in-progress", "review"].contains(status)) || (formula.rev == formula.me && status == "review")
   anc1: if(parent, parent.asFile())
   anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
   anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
@@ -42,6 +42,7 @@ formulas:
   ancs: if(formula.anc1.asLink() == this, [], if(formula.anc2.asLink() == this, [formula.anc1], if(formula.anc3.asLink() == this, [formula.anc2, formula.anc1], if(formula.anc4.asLink() == this, [formula.anc3, formula.anc2, formula.anc1], [formula.anc4, formula.anc3, formula.anc2, formula.anc1]))))
   anc_path: formula.ancs.filter(value).map(if(value.properties.priority, value.properties.priority, 5).toString() + " " + value.basename.replace(/^,/, "")).join(" › ")
   pgroup: if(formula.is_head, if(formula.anc_path != "", formula.anc_path + " › ", "") + formula.seg_self, if(formula.anc_path != "", formula.anc_path, if(formula.anc1.asLink() == this, formula.anc1.basename.replace(/^,/, ""), "no project"))) + ":"
+  later_date: if(formula.section.contains("Later"), date(not_before).format("YYYY-MM-DD"), "")
 properties:
   formula.section:
     displayName: Section
@@ -49,8 +50,8 @@ properties:
     displayName: Project
   formula.type:
     displayName: Type
-  stakeholder:
-    displayName: Stakeholder
+  reviewer:
+    displayName: Reviewer
   not_before:
     displayName: Not Before
 views:
@@ -72,8 +73,8 @@ views:
       - formula.section
       - status
       - priority
+      - reviewer
       - owner
-      - stakeholder
       - parent
       - not_before
       - dependencies
@@ -82,6 +83,8 @@ views:
       - model
       - effort
     sort:
+      - property: formula.later_date
+        direction: ASC
       - property: formula.effective_priority
         direction: DESC
       - property: file.ctime
@@ -89,6 +92,7 @@ views:
     columnSize:
       file.name: 528
       formula.section: 130
+      note.owner: 83
       note.parent: 143
   - type: table
     name: my projects
@@ -107,7 +111,7 @@ views:
       - status
       - priority
       - owner
-      - stakeholder
+      - reviewer
       - not_before
       - dependencies
       - due
@@ -118,6 +122,8 @@ views:
       - property: formula.is_head
         direction: DESC
       - property: formula.section
+        direction: ASC
+      - property: formula.later_date
         direction: ASC
       - property: formula.effective_priority
         direction: DESC
@@ -145,7 +151,7 @@ views:
       - status
       - priority
       - owner
-      - stakeholder
+      - reviewer
       - parent
       - not_before
       - dependencies
@@ -154,6 +160,8 @@ views:
       - model
       - effort
     sort:
+      - property: formula.later_date
+        direction: ASC
       - property: formula.effective_priority
         direction: DESC
       - property: file.ctime
@@ -163,7 +171,7 @@ views:
       formula.section: 130
       status: 100
       priority: 70
-      stakeholder: 120
+      reviewer: 120
       parent: 220
       not_before: 110
       due: 110
@@ -186,7 +194,7 @@ views:
       - status
       - priority
       - owner
-      - stakeholder
+      - reviewer
       - not_before
       - dependencies
       - due
@@ -197,6 +205,8 @@ views:
       - property: formula.is_head
         direction: DESC
       - property: formula.section
+        direction: ASC
+      - property: formula.later_date
         direction: ASC
       - property: formula.effective_priority
         direction: DESC
@@ -219,7 +229,7 @@ views:
       - status
       - priority
       - owner
-      - stakeholder
+      - reviewer
       - parent
       - not_before
       - dependencies
@@ -237,7 +247,7 @@ views:
       formula.type: 80
       status: 100
       priority: 70
-      stakeholder: 120
+      reviewer: 120
       parent: 220
       not_before: 110
       due: 110

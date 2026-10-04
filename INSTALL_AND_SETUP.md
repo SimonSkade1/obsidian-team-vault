@@ -3,7 +3,7 @@ status:
 priority:
 parent:
 owner: harry
-stakeholder:
+reviewer:
 not_before:
 subscribers:
 ---
@@ -61,6 +61,6 @@ Three programs: **Syncthing** keeps the folder in sync, **Obsidian** edits it, *
 	complete the setup
 	```
 
-	It asks for your first name — lowercase; it names your file in `vault-members/`, which the others link in `owner` and `stakeholder` — and then does everything that can be done from disk: the Syncthing ignore line that keeps your private files off the network, Templater, Hidden Folders Access (shows the `.claude` folder) and Outliner downloaded into the vault's plugin folder and switched on, your own checked copy of the note templates with the **Alt+P** hotkey for the project sections (a new note's `owner` and `parent` are filled by the **New** button itself), new notes landing beside the note you are in, your identity note `_local/me.md` and member file `vault-members/<name>.md`, and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
+	It asks for your first name — lowercase; it names your file in `vault-members/`, which the others link in `owner` and `reviewer` — and then does everything that can be done from disk: the Syncthing ignore line that keeps your private files off the network, Templater, Hidden Folders Access (shows the `.claude` folder) and Outliner downloaded into the vault's plugin folder and switched on, your own checked copy of the note templates with the **Alt+P** hotkey for the project sections (a new note's `owner` and `parent` are filled by the **New** button itself), new notes landing beside the note you are in, your identity note `_local/me.md` and member file `vault-members/<name>.md`, and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
 8. **Read [[README]]** (5 minutes), then do the five-minute exercise in [[,Vault tutorial exercise]].
 9. **Optional — a private folder.** Tell Claude `set up my private folder`: it creates `private-projects-tasks-notes/` and `private.base` (`me.base` over that folder). Same prefixes, properties and subtasks table as the shared tree, but both stay on this machine — the shared ignore list excludes them — so nobody else sees them and nothing backs them up. Don't link to a private note from a shared one: the others would see its title as a dead link.

@@ -28,7 +28,7 @@ collect(item):    # first match; returns the leaves under item that can run now
         it has queue children other than `create spec …` / `create plan …` items → close(item); nothing
         else                    → [item]    # the project is executed as a whole
 
-close(project): if a child is `review`: set the project `review`, and its `stakeholder` to the user where it is `claude`
+close(project): if a child is `review`: set the project `review`, and its `reviewer` to the user where it is `claude`
                 else: set it `done`
 ```
 
@@ -40,7 +40,7 @@ close(project): if a child is `review`: set the project `review`, and its `stake
 
 ## setup
 
-A project is hand-made if it is the launch project, or a child whose `stakeholder` is not `claude`. Read it and create the spec task and the plan task that it needs and does not have (Formats 2); a finished one counts as had. It needs a spec task where no spec is written and writing one is worth a run. It needs a plan task where it needs decomposing, and also where it is open whether it does. The tasks need no body. Add the `![[subtasks.base]]` line where it is missing: without it the children table stays empty. Tell the user what you created.
+A project is hand-made if it is the launch project, or a child whose `reviewer` is not `claude`. Read it and create the spec task and the plan task that it needs and does not have (Formats 2); a finished one counts as had. It needs a spec task where no spec is written and writing one is worth a run. It needs a plan task where it needs decomposing, and also where it is open whether it does. The tasks need no body. Add the `![[subtasks.base]]` line where it is missing: without it the children table stays empty. Tell the user what you created.
 
 ## spawn
 

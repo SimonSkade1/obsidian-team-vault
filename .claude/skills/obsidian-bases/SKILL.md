@@ -5,7 +5,7 @@ description: Query, create, and edit Obsidian Bases (.base files) — views, fil
 
 # Obsidian Bases
 
-Base files are YAML defining database-like views over vault notes. This vault's bases: `me.base` (everything in `projects-tasks-notes/`, first view filtered to the current user), `subtasks.base` (embedded at the top of every project: *my project overview* / *everyone project overview* list its direct children, *my project subprojects* / *everyone project subprojects* its whole subtree grouped like the projects views; a finished item stays while its parent is open, a finished subtree collapses to its top item) and `recent.base` (recently modified notes). `me.base` and `subtasks.base` carry the same `formulas:` block verbatim (Bases has no include mechanism) — change one and change the other in the same edit, or the views of an item disagree. `private.base` (a member's unsynced base, if they have one) is `me.base` with the folder swapped: after changing `me.base`, regenerate it with the `sed` line in the `setup-member` skill. People values (`owner`, `stakeholder`, `subscribers`) are links, `"[[simon]]"`, but plain names still work: `own`, `stk`, `subscribed` and `parent_own` reduce both to the bare lowercase name with one `replace` that drops `[[`, a path, `.md`, an `|alias` and `]]` (a link's `toString()` is its source text, `[[simon]]`). After `section` come `parent_terminal`, `nested`, `nested_any`, `status_sec` (`me.base`'s *overview* views hide items whose parent has the same owner — those are seen in the project's table — except the user's items of sections 1–3 and 6, `status_sec`) and the group key `pgroup` of the *projects* and *subprojects* views (next section).
+Base files are YAML defining database-like views over vault notes. This vault's bases: `me.base` (everything in `projects-tasks-notes/`, first view filtered to the current user), `subtasks.base` (embedded at the top of every project: *my project overview* / *everyone project overview* list its direct children, *my project subprojects* / *everyone project subprojects* its whole subtree grouped like the projects views; a finished item stays while its parent is open, a finished subtree collapses to its top item) and `recent.base` (recently modified notes). `me.base` and `subtasks.base` carry the same `formulas:` block verbatim (Bases has no include mechanism) — change one and change the other in the same edit, or the views of an item disagree. `private.base` (a member's unsynced base, if they have one) is `me.base` with the folder swapped: after changing `me.base`, regenerate it with the `sed` line in the `setup-member` skill. People values (`owner`, `reviewer`, `subscribers`) are links, `"[[simon]]"`, but plain names still work: `own`, `rev`, `subscribed` and `parent_own` reduce both to the bare lowercase name with one `replace` that drops `[[`, a path, `.md`, an `|alias` and `]]` (a link's `toString()` is its source text, `[[simon]]`). After `section` come `parent_terminal`, `nested`, `nested_any`, `status_sec` (`me.base`'s *overview* views hide items whose parent has the same owner — those are seen in the project's table — except the user's items of sections 1–3 and 6, `status_sec`) and the group key `pgroup` of the *projects* and *subprojects* views (next section).
 
 ## The projects views' group key
 
@@ -44,6 +44,8 @@ obsidian base:query path="me.base" view="my overview" format=json
 
 Paths relative to vault root. Formats: `json|csv|tsv|md|paths`. The CLI needs the Obsidian app running.
 
+Check bases only headlessly: `base:query` for rows and values, `bases_render.sh` for order and groups. The user works in that same Obsidian window (this chat may run inside it), so a tab or window you open there interrupts them.
+
 To understand a base's structure, just read the `.base` file — human-readable YAML with `filters`, `formulas`, `properties`, `views`.
 
 ## Workflow for creating/editing
@@ -53,7 +55,7 @@ To understand a base's structure, just read the `.base` file — human-readable 
 3. **Add formulas** (optional): Define computed properties in the `formulas` section
 4. **Configure views**: Add one or more views (`table`, `cards`, `list`, or `map`) with `order` specifying which properties to display
 5. **Validate**: Verify valid YAML; check all referenced properties/formulas exist. Common issues: unquoted strings with special YAML characters, mismatched quotes in formulas, referencing `formula.X` without defining `X` in `formulas`
-6. **Test**: Open the `.base` file in Obsidian (or run `base:query`) to confirm it renders. On YAML error, check quoting rules below
+6. **Test**: Run `base:query` on each changed view (`bases_render.sh` where order or groups matter) to confirm it parses and returns the expected rows. On YAML error, check quoting rules below
 
 ## Schema
 

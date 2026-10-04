@@ -38,4 +38,4 @@ Where a task asks you for a project's `# Result`, write it the same way into the
 
 `# Report` is the last section of the item, and often absent. Write it only for detail a later agent would need and cannot get from the artifacts: decisions with their reasons, dead ends.
 
-Last, set the item's `status`: `done`, or `review`, and then, where its `stakeholder` is `claude`, set the stakeholder to the user, so that a human gets the check. If you tried and could not do the work, set neither: throw an exception.
+Last, set the item's `status`: `done`, or `review`, and then, where its `reviewer` is `claude`, set the reviewer to the user, so that a human gets the check. If you tried and could not do the work, set neither: throw an exception.

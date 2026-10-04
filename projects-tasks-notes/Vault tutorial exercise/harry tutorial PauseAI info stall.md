@@ -3,7 +3,7 @@ parent: "[[,Vault tutorial exercise]]"
 owner: "[[harry]]"
 status: cancelled
 priority:
-stakeholder: "[[simon]]"
+reviewer: "[[simon]]"
 not_before:
 subscribers:
 model:
