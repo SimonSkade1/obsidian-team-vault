@@ -96,6 +96,9 @@ fi
 if [ -f other-files/check-unassigned.py ]; then
   python3 other-files/check-unassigned.py || echo "WARN: unassigned-items check failed — continuing"
 fi
+# Same place, same reasons: vault-members/<name>.base (me.base as <name> sees it) follows
+# a change to me.base, or a new member, even if nobody ran the generator. Never fatal.
+python3 .claude/scripts/member_bases.py || echo "WARN: member bases failed — continuing"
 
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
   echo "No git repo in the vault yet (git init + initial commit needed) — skipping."

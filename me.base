@@ -8,10 +8,11 @@ filters:
         - owner == if(formula.me, link(formula.me), "")
         - owner != if(formula.me, link(formula.me), "")
     - or:
-        - reviewer == if(formula.me, link(formula.me), "")
-        - reviewer != if(formula.me, link(formula.me), "")
+        - reviewer == if(formula.user, link(formula.user), "")
+        - reviewer != if(formula.user, link(formula.user), "")
 formulas:
-  me: if(file("_local/me.md"), file("_local/me.md").properties.user.toString().lower(), "")
+  user: if(file("_local/me.md"), file("_local/me.md").properties.user.toString().lower(), "")
+  me: formula.user
   own: if(owner, owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), "")
   rev: if(reviewer, reviewer.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
   type: if(file.name.startsWith(","), "project", if(file.name.startsWith("!"), "task", "note"))
@@ -73,8 +74,8 @@ views:
       - formula.section
       - status
       - priority
-      - reviewer
       - owner
+      - reviewer
       - parent
       - not_before
       - dependencies
@@ -90,7 +91,7 @@ views:
       - property: file.ctime
         direction: DESC
     columnSize:
-      file.name: 528
+      file.name: 488
       formula.section: 130
       note.owner: 83
       note.parent: 143

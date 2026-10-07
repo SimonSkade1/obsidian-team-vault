@@ -113,4 +113,4 @@ Less important:
 4. `external-projects/` — mostly intended for code repositories. (not synced via syncthing. use github here instead.)
 5. `shared_templates/` — the note templates (synced); `local_templates/` — your running copy (unsynced); `_local/` — your identity note `me.md` (unsynced).
 6. `.claude/` — Claude configuration; `CLAUDE.md` and `settings.local.json` are yours, the rest is shared.
-7. `vault-members/` — one empty file per vault member (`simon.md`, …), made by the setup; the links in `owner` / `reviewer` / `subscribers` point here.
+7. `vault-members/` — one empty file per vault member (`simon.md`, …), made by the setup; the links in `owner` / `reviewer` / `subscribers` point here. Next to each, a base (`simon.base`, …): [[me.base]] as that member sees it, generated from [[me.base]] (edits to it are overwritten).

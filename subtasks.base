@@ -13,7 +13,8 @@ filters:
         - reviewer == this.owner
         - reviewer != this.owner
 formulas:
-  me: if(file("_local/me.md"), file("_local/me.md").properties.user.toString().lower(), "")
+  user: if(file("_local/me.md"), file("_local/me.md").properties.user.toString().lower(), "")
+  me: formula.user
   own: if(owner, owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), "")
   rev: if(reviewer, reviewer.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
   type: if(file.name.startsWith(","), "project", if(file.name.startsWith("!"), "task", "note"))

@@ -85,10 +85,11 @@ def resolve_target(target: str, files):
         return None, None
     for cand in (t + '.md', t):
         cl = cand.lower()
-        exact = [f for f in files if str(f).lower() == cl]
-        matches = exact or [f for f in files if str(f).lower().endswith('/' + cl)]
+        # as_posix(): links use '/', but str() of a path on Windows uses '\'
+        exact = [f for f in files if f.as_posix().lower() == cl]
+        matches = exact or [f for f in files if f.as_posix().lower().endswith('/' + cl)]
         if matches:
-            best = min(matches, key=lambda f: (len(f.parts), str(f)))
+            best = min(matches, key=lambda f: (len(f.parts), f.as_posix()))
             note = None
             if len(matches) > 1:
                 note = f"ambiguous ({len(matches)} matches), picked shortest"
@@ -467,6 +468,11 @@ def render_embed(raw, current_rel, prefix, ctx, depth, out):
 
 
 def main():
+    # On Windows a piped stdout (as under Claude Code) is cp1252 up to Python 3.14, which cannot
+    # encode the table's box-drawing characters (UnicodeEncodeError). Force UTF-8.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description='Read an Obsidian note with embeds expanded.')
     ap.add_argument('path', help='vault-relative path or bare note name, optional #Heading / #^blockid')
     ap.add_argument('--vault', default=None)
