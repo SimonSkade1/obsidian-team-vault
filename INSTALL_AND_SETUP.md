@@ -2,7 +2,7 @@
 status:
 priority:
 parent:
-owner: harry
+owner:
 reviewer:
 not_before:
 subscribers:

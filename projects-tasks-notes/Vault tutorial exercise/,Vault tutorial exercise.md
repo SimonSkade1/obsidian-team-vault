@@ -2,8 +2,8 @@
 status:
 priority: 1
 parent:
-owner: "[[simon]]"
-reviewer: "[[simon]]"
+owner: "[[<vault-owner>]]"
+reviewer: "[[<vault-owner>]]"
 not_before: 2099-01-01
 subscribers:
 ---

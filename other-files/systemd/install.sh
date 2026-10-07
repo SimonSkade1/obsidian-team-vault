@@ -12,15 +12,6 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 systemctl --user link --force "$HERE/team-vault-daily-review.service"
 systemctl --user enable --now --force "$HERE/team-vault-daily-review.timer"
 
-# Discord bot: a long-lived session, restarted by systemd after a crash and after its daily
-# self-exit (04:00 UTC). Needs the host state described in VPS_SETUP_INFO.md, "Discord bot".
-systemctl --user enable --now --force "$HERE/pai-discord-bot.service"
-# Discord outbox: posts what members' sessions queue in other-files/discord/outbox/ (discord.py deliver).
-systemctl --user enable --now --force "$HERE/pai-discord-outbox.service"
-# Discord watchdog: checks the bot session every 5 min, restarts it, DMs simon (other-files/discord/watchdog.py).
-systemctl --user link --force "$HERE/pai-discord-watchdog.service"
-systemctl --user enable --now --force "$HERE/pai-discord-watchdog.timer"
-
 systemctl --user daemon-reload
 systemctl --user list-timers --no-pager | head -6
 

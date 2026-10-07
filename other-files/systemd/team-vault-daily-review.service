@@ -10,6 +10,6 @@ After=network-online.target
 Type=oneshot
 ExecStart=%h/obsidian-team-vault/other-files/run-daily-review.sh
 TimeoutStartSec=2h
-# Credentials as for pai-discord-bot.service: the one-year token in claude.env, else the host's login.
+# Credentials: the one-year token in claude.env, else the host's login.
 EnvironmentFile=-%h/.claude/channels/discord/claude.env
 Nice=10
