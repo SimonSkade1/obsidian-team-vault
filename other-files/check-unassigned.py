@@ -65,13 +65,16 @@ def wikilinks(text):
     return out
 
 
-def kind(basename):
-    return "project" if basename.startswith(",") else "task" if basename.startswith("!") else "note"
+def kind(basename, fm):
+    """Same rule as the bases' `type` formula: `status: note` or a `;` prefix = note."""
+    if fm.get("status", "") == "note" or basename.startswith(";"):
+        return "note"
+    return "project" if basename.startswith(",") else "task"
 
 
 def item_line(base, fm):
     st = fm.get("status", "")
-    return f"[[{base}]] — {kind(base)}" + (f", {st}" if st else "")
+    return f"[[{base}]] — {kind(base, fm)}" + (f", {st}" if st and st != "note" else "")
 
 
 def scan(root):

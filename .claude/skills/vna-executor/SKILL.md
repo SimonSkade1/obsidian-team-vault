@@ -19,7 +19,7 @@ No agent reviews your work after you. So before you finish, check your result in
 
 ## What you leave
 
-Your work goes into the artifacts, not into the item's body. Put new artifacts into the folder the item lies in by default. Most readers of an item read its `# Result` and nothing else, so keep it short and self-contained.
+Your work goes into the artifacts, not into the item's body. Put new artifacts into the folder the item lies in by default; a note among them starts with `;` (Formats 6). Most readers of an item read its `# Result` and nothing else, so keep it short and self-contained.
 
 `# Result` is the first section of the item: below the input prompt and above every other heading. It has this shape; leave out what does not apply:
 

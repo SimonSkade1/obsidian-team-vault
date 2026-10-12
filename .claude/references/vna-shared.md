@@ -13,3 +13,4 @@ These formats are exact, because other agents read them.
 3. **Input prompt**: the text above an item's first heading. In a project file it stands below the `![[subtasks.base]]` line.
 4. **Checkpoint file**: a file named `!checkpoint <what is asked>`, with the header of 1 but `owner` = the user, and `status: inbox` once its body is written (empty before). It only asks the user something: they answer it and set it `done`, and no agent runs on it. The name contains no `?` or `:`, which are invalid in filenames on Windows.
 5. **Checkpoint question format**: numbered questions, each with a recommendation and an empty `A:` line; then one line saying that an unanswered question means its recommendation stands.
+6. **Note files**: a file an agent creates in the vault that is material rather than an item to run — research, drafts, copy — has a name starting with `;`, e.g. `;research for page {Home}`. Without it the file counts as a task, and the controller would run it.

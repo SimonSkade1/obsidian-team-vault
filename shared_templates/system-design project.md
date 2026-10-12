@@ -55,7 +55,7 @@ if (head !== "") tR += "---\n" + head + "---\n";
 
 # Steps
 1. [ ] domain: know it or learn it first
-2. [ ] target interviews — notes in a child note `target interviews for {<% tp.file.title.replace(/^,/, "") %>}`
+2. [ ] target interviews — notes in a child note `;target interviews for {<% tp.file.title.replace(/^,/, "") %>}`
 3. [ ] archetypes clarified (each a concrete person) → Targets below
 4. [ ] goals and criteria for each archetype clarified → Targets below
 5. [ ] inspiration research: similar systems that work — findings under Notes

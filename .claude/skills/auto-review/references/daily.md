@@ -42,7 +42,7 @@ If nothing is staged, write a brief "quiet day" note and still commit it so the 
 
 **Selective deep dive.** Don't read the entire diff at once. Get the file list from `--stat`, then read individual diffs (`git diff --cached -- "path/to/file"`) prioritizing:
 
-1. `projects-tasks-notes/` — projects (`,` prefix), tasks (`!` prefix) and notes (no prefix); these carry the most signal about what the team is working toward
+1. `projects-tasks-notes/` — projects (`,` prefix), notes (`;` prefix or `status: note`) and tasks (the rest); these carry the most signal about what the team is working toward
 2. Other substantive content files
 
 Deprioritize (skim or skip): `.obsidian/`, `.claude/` config churn, `periodic-auto-summaries/` itself, `other-files/logs`-adjacent noise.

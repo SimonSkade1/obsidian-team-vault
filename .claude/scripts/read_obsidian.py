@@ -382,8 +382,11 @@ def dependency_cells(ctx, rows):
     return cells
 
 
-def child_type(name):
-    return 'project' if name.startswith(',') else ('task' if name.startswith('!') else 'note')
+def child_type(name, fm):
+    """Same rule as the bases' `type` formula: `status: note` or a `;` prefix = note."""
+    if (fm.get('status', '') or '').strip() == 'note' or name.startswith(';'):
+        return 'note'
+    return 'project' if name.startswith(',') else 'task'
 
 
 def render_children(raw, base_rel, note_rel, prefix, ctx, out):
@@ -395,7 +398,7 @@ def render_children(raw, base_rel, note_rel, prefix, ctx, out):
         return
     table = [CHILD_HEADERS]
     for i, ((f, fm), (blocked, deps)) in enumerate(zip(rows, dependency_cells(ctx, rows)), 1):
-        table.append((str(i), blocked, child_type(f.name),
+        table.append((str(i), blocked, child_type(f.name, fm),
                       fm.get('status', '') or '-', fm.get('owner', '') or '-',
                       fm.get('reviewer', '') or '-', fm.get('priority', '') or '-',
                       fm.get('not_before', '') or '-', fm.get('due', '') or '-', fm.get('model', '') or '-',

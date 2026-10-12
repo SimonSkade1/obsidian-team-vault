@@ -15,7 +15,7 @@ formulas:
   me: formula.user
   own: if(owner, owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), "")
   rev: if(reviewer, reviewer.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
-  type: if(file.name.startsWith(","), "project", if(file.name.startsWith("!"), "task", "note"))
+  type: if(status == "note" || file.name.startsWith(";"), "note", if(file.name.startsWith(","), "project", "task"))
   deferred: if(not_before, date(not_before) > now(), false)
   blocked: if(dependencies, list(dependencies).filter(value.asFile() && !["done", "cancelled", "failed", "review"].contains(value.asFile().properties.status)).length > 0, false)
   terminal: status == "done" || status == "cancelled" || status == "failed"
@@ -26,11 +26,11 @@ formulas:
   mine: formula.me == "" || formula.own == formula.me || formula.rev == formula.me || formula.subscribed
   effective_priority: if(priority.isEmpty(), 5, priority) + if(due, if(date(due) < today(), 2, if(date(due) < today() + "1 day", 1, 0)), 0)
   archived_subscribed: formula.terminal && formula.subscribed && formula.own != formula.me && formula.rev != formula.me
-  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "14 Archived Subscribed", if(formula.type == "note", "13 Archived Notes", "12 Archived")), if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.rev == formula.me && status == "review", "3 Review", if(formula.own == formula.me && status == "review", "6 Awaiting Review", if(formula.type == "note", if(formula.deferred, "11 Later Notes", "8 Notes"), if(formula.blocked, "9 Blocked", if(formula.deferred, "10 Later Tasks", if(formula.own == formula.me, "4 Your Tasks", if(formula.rev == formula.me, "5 Delegated", if(formula.subscribed, "7 Subscribed", "15 Others"))))))))))))'
+  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "14 Archived Subscribed", if(formula.type == "note", "13 Archived Notes", "12 Archived")), if(formula.blocked, "9 Blocked", if(formula.deferred, if(formula.type == "note", "11 Later Notes", "10 Later Tasks"), if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.rev == formula.me && status == "review", "3 Review", if(formula.own == formula.me && status == "review", "6 Awaiting Review", if(formula.type == "note", "8 Notes", if(formula.own == formula.me, "4 Your Tasks", if(formula.rev == formula.me, "5 Delegated", if(formula.subscribed, "7 Subscribed", "15 Others"))))))))))))'
   parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed"].contains(parent.asFile().properties.status), false)
   nested: formula.own == formula.me && formula.parent_own == formula.me && !formula.parent_terminal
   nested_any: formula.own != "" && formula.own == formula.parent_own && !formula.parent_terminal
-  status_sec: (formula.own == formula.me && ["inbox", "in-progress", "review"].contains(status)) || (formula.rev == formula.me && status == "review")
+  status_sec: '["1 Inbox", "2 In Progress", "3 Review", "6 Awaiting Review"].contains(formula.section)'
   anc1: if(parent, parent.asFile())
   anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
   anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
@@ -91,8 +91,9 @@ views:
       - property: file.ctime
         direction: DESC
     columnSize:
-      file.name: 488
+      file.name: 549
       formula.section: 130
+      note.status: 102
       note.owner: 83
       note.parent: 143
   - type: table

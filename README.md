@@ -31,9 +31,9 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 
 ## Files
 
-1. **The name sets the type**: `,name` = project, `!name` = task, no prefix = note. Renaming changes the type.
+1. **The name sets the type**: `,name` = project, `;name` = note, anything else = task (a `!` in front is optional). Renaming changes the type. `status: note` also makes a file a note.
 2. **Nine properties**, written by the **New** button when you create a file (see *Creating items*):
-	1. `status` — empty = active; or `in-progress`, `inbox`, `review` (finished, the reviewer checks), `exception` (set only by Claude's VNA runs), `done`, `cancelled`, `failed`. Nothing else.
+	1. `status` — empty = active; or `in-progress`, `inbox`, `review` (finished, the reviewer checks), `exception` (set only by Claude's VNA runs), `note` (makes it a note that is never archived — for one that should go through `review` / `done`, use the `;` prefix instead), `done`, `cancelled`, `failed`. Nothing else.
 	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first.
 	3. `parent` — one link to its project, `"[[,name]]"`; empty = top of a tree.
 	4. `owner` — who does it: a link to the person, `"[[harry]]"` (type `[[` and pick the name). Vault members have a file in `vault-members/`. Someone outside the vault: a link only if they'll likely join (it stays unresolved until they do), else just their name.
@@ -55,7 +55,7 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 	5. `5 Delegated` (someone else — a member, an external person or Claude — is owner, you are the reviewer)
 	6. `6 Awaiting Review` (your `review` items that someone else checks)
 	7. `7 Subscribed` (you are in the subscriber column)
-	8. `8 Notes` (files that don't start with `,` or `!`)
+	8. `8 Notes` (files starting with `;` or with `status: note`)
 	9. `9 Blocked` (an unfinished item in `dependencies`)
 	10. `10 Later Tasks` (`not_before` in the future)
 	11. `11 Later Notes`

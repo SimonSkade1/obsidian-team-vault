@@ -28,7 +28,7 @@ Final check: what do I know that the successor couldn't guess — surprises, tra
 
 ## 2a. Manual-handoff
 
-When the note lands in the `projects-tasks-notes/` folder, make it a first-class file of its type: prefix the filename `,HANDOFF ` for an open project or `HANDOFF ` for a knowledge/documentation handoff (e.g. `,HANDOFF YYYY-MM-DD HHmm <topic>.md`), and set `parent` frontmatter to the goal or knowledge note it concerns.
+When the note lands in the `projects-tasks-notes/` folder, make it a first-class file of its type: prefix the filename `,HANDOFF ` for an open project or `;HANDOFF ` for a knowledge/documentation handoff (e.g. `,HANDOFF YYYY-MM-DD HHmm <topic>.md`), and set `parent` frontmatter to the goal or knowledge note it concerns.
 
 Reply with one line + wikilink to the note; the user starts a fresh chat and points the successor at it (or pastes it).
 
