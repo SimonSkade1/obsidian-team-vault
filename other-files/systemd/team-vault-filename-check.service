@@ -1,0 +1,16 @@
+# File names Windows can hold, checked every 10 minutes (team-vault-filename-check.timer):
+# other-files/check-filenames.py says what it checks and what it does about a finding.
+# Vault at ~/obsidian-team-vault. Credentials: the one-year token in claude.env, else the
+# host's login. A finding starts a headless `claude -p` that renames the files and patches their links.
+# Logs: journalctl --user -u team-vault-filename-check -o cat (silent while all names are fine); each Claude run
+# also in other-files/logs/filename-fix-<time>.log.
+[Unit]
+Description=Team vault — file names Windows can hold (check; a Claude session fixes what it finds)
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/obsidian-team-vault
+EnvironmentFile=-%h/.claude/channels/discord/claude.env
+ExecStart=/usr/bin/python3 %h/obsidian-team-vault/other-files/check-filenames.py --fix
+TimeoutStartSec=40min
+Nice=10

@@ -1,0 +1,20 @@
+{
+  "_comment": "Settings of the headless session that other-files/check-filenames.py --fix starts (team-vault-filename-check.timer) after renaming files Windows cannot hold: it patches the links to the old names. It can read, search and edit, but has no shell (the script does the renames). dontAsk refuses whatever is not allowed (the script also passes --permission-mode dontAsk, which wins over the host's defaultMode auto), and deny beats allow. Change the model here, as for the nightly jobs.",
+  "model": "sonnet",
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Edit"
+    ],
+    "deny": [
+      "Read(~/.claude/**)",
+      "Read(~/.claude.json)",
+      "Read(~/.ssh/**)",
+      "WebSearch",
+      "WebFetch"
+    ]
+  }
+}

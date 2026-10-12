@@ -21,7 +21,7 @@ import re
 import sys
 from pathlib import Path
 
-TERMINAL = {"done", "cancelled", "failed"}
+TERMINAL = {"done", "cancelled", "failed", "note-archived"}
 CHECK_PREFIX = "!check unassigned items"
 OWNER = "simon"
 PRIORITY = 6
@@ -66,8 +66,8 @@ def wikilinks(text):
 
 
 def kind(basename, fm):
-    """Same rule as the bases' `type` formula: `status: note` or a `;` prefix = note."""
-    if fm.get("status", "") == "note" or basename.startswith(";"):
+    """Same rule as the bases' `type` formula: status `note` / `note-archived` or a `;` prefix = note."""
+    if fm.get("status", "") in ("note", "note-archived") or basename.startswith(";"):
         return "note"
     return "project" if basename.startswith(",") else "task"
 

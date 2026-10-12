@@ -17,10 +17,10 @@ formulas:
   me: formula.user
   own: if(owner, owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), "")
   rev: if(reviewer, reviewer.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
-  type: if(status == "note" || file.name.startsWith(";"), "note", if(file.name.startsWith(","), "project", "task"))
+  type: if(["note", "note-archived"].contains(status) || file.name.startsWith(";"), "note", if(file.name.startsWith(","), "project", "task"))
   deferred: if(not_before, date(not_before) > now(), false)
-  blocked: if(dependencies, list(dependencies).filter(value.asFile() && !["done", "cancelled", "failed", "review"].contains(value.asFile().properties.status)).length > 0, false)
-  terminal: status == "done" || status == "cancelled" || status == "failed"
+  blocked: if(dependencies, list(dependencies).filter(value.asFile() && !["done", "cancelled", "failed", "note-archived", "review"].contains(value.asFile().properties.status)).length > 0, false)
+  terminal: status == "done" || status == "cancelled" || status == "failed" || status == "note-archived"
   unassigned: formula.own == ""
   subscribed: list(subscribers).map(value.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower()).contains(formula.me)
   parent_own: if(parent && parent.asFile(), if(parent.asFile().properties.owner, parent.asFile().properties.owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), ""), "")
@@ -29,7 +29,7 @@ formulas:
   effective_priority: if(priority.isEmpty(), 5, priority) + if(due, if(date(due) < today(), 2, if(date(due) < today() + "1 day", 1, 0)), 0)
   archived_subscribed: formula.terminal && formula.subscribed && formula.own != formula.me && formula.rev != formula.me
   section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "14 Archived Subscribed", if(formula.type == "note", "13 Archived Notes", "12 Archived")), if(formula.blocked, "9 Blocked", if(formula.deferred, if(formula.type == "note", "11 Later Notes", "10 Later Tasks"), if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.rev == formula.me && status == "review", "3 Review", if(formula.own == formula.me && status == "review", "6 Awaiting Review", if(formula.type == "note", "8 Notes", if(formula.own == formula.me, "4 Your Tasks", if(formula.rev == formula.me, "5 Delegated", if(formula.subscribed, "7 Subscribed", "15 Others"))))))))))))'
-  parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed"].contains(parent.asFile().properties.status), false)
+  parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed", "note-archived"].contains(parent.asFile().properties.status), false)
   nested: formula.own == formula.me && formula.parent_own == formula.me && !formula.parent_terminal
   nested_any: formula.own != "" && formula.own == formula.parent_own && !formula.parent_terminal
   status_sec: '["1 Inbox", "2 In Progress", "3 Review", "6 Awaiting Review"].contains(formula.section)'
@@ -39,7 +39,7 @@ formulas:
   anc4: if(formula.anc3 && formula.anc3.properties.parent, formula.anc3.properties.parent.asFile())
   in_tree: (formula.anc1 && formula.anc1.asLink() == this) || (formula.anc2 && formula.anc2.asLink() == this) || (formula.anc3 && formula.anc3.asLink() == this) || (formula.anc4 && formula.anc4.asLink() == this)
   kids: file.backlinks.filter(value.asFile() && value.asFile().properties.parent && value.asFile().properties.parent.asFile() == file)
-  has_children: formula.kids.filter(!["done", "cancelled", "failed", "review"].contains(value.asFile().properties.status)).length > 0
+  has_children: formula.kids.filter(!["done", "cancelled", "failed", "note-archived", "review"].contains(value.asFile().properties.status)).length > 0
   is_head: formula.type == "project" && if(formula.in_tree && !formula.terminal, formula.kids.length > 0, formula.has_children)
   seg_self: if(priority, priority, 5).toString() + " " + file.basename.replace(/^,/, "")
   ancs: if(formula.anc1.asLink() == this, [], if(formula.anc2.asLink() == this, [formula.anc1], if(formula.anc3.asLink() == this, [formula.anc2, formula.anc1], if(formula.anc4.asLink() == this, [formula.anc3, formula.anc2, formula.anc1], [formula.anc4, formula.anc3, formula.anc2, formula.anc1]))))

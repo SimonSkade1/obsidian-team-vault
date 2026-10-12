@@ -11,6 +11,9 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # another vault built from the same template on this host.
 systemctl --user link --force "$HERE/team-vault-daily-review.service"
 systemctl --user enable --now --force "$HERE/team-vault-daily-review.timer"
+# File names Windows can hold: checked every 10 min; a Claude session fixes what it finds (other-files/check-filenames.py).
+systemctl --user link --force "$HERE/team-vault-filename-check.service"
+systemctl --user enable --now --force "$HERE/team-vault-filename-check.timer"
 
 systemctl --user daemon-reload
 systemctl --user list-timers --no-pager | head -6

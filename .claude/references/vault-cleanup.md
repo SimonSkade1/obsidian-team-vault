@@ -44,7 +44,7 @@ Skipped files stay put and out of the log note (§6): a recent edit falls inside
 
 Read the `status` and `parent` properties across `projects-tasks-notes/`. The tree comes from `parent` alone — a project's subtasks are exactly the files pointing at it, which is also what its embedded base shows.
 
-Where a note's `parent` is evident but missing, fill it in. Where `parent` and the existing folder placement disagree and neither is clearly right, **flag it — do not guess** (§6). Terminated items (`done`/`cancelled`/`failed`) stay in the tree as history; the one move a status triggers is archiving (§4, item 4).
+Where a note's `parent` is evident but missing, fill it in. Where `parent` and the existing folder placement disagree and neither is clearly right, **flag it — do not guess** (§6). Terminated items (`done`/`cancelled`/`failed`/`note-archived`) stay in the tree as history; the one move a status triggers is archiving (§4, item 4).
 
 **Temporary, until 2026-11-01 (then delete this paragraph):** the property `stakeholder` was renamed `reviewer` on 2026-10-04, and members whose templates are older still write `stakeholder:`. Grep `projects-tasks-notes/` for frontmatter lines starting `stakeholder:` and, in each file not excluded by §2, rename that key to `reviewer:` in place (same position, value unchanged). If a file already has a `reviewer:` key, flag it instead (§6).
 

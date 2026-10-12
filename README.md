@@ -31,9 +31,9 @@ How the vault is used day to day. Machine not set up yet? First the setup steps 
 
 ## Files
 
-1. **The name sets the type**: `,name` = project, `;name` = note, anything else = task (a `!` in front is optional). Renaming changes the type. `status: note` also makes a file a note.
+1. **The name sets the type**: `,name` = project, `;name` = note, anything else = task (a `!` in front is optional). Renaming changes the type. `status: note` (or `note-archived`) also makes a file a note.
 2. **Nine properties**, written by the **New** button when you create a file (see *Creating items*):
-	1. `status` — empty = active; or `in-progress`, `inbox`, `review` (finished, the reviewer checks), `exception` (set only by Claude's VNA runs), `note` (makes it a note that is never archived — for one that should go through `review` / `done`, use the `;` prefix instead), `done`, `cancelled`, `failed`. Nothing else.
+	1. `status` — empty = active; or `in-progress`, `inbox`, `review` (finished, the reviewer checks), `exception` (set only by Claude's VNA runs), `note` (makes it a note), `note-archived` (an archived note), `done`, `cancelled`, `failed`. Nothing else.
 	2. `priority` — 1–10, **10 = most important**, empty counts as 5; sorts within a section, highest first.
 	3. `parent` — one link to its project, `"[[,name]]"`; empty = top of a tree.
 	4. `owner` — who does it: a link to the person, `"[[harry]]"` (type `[[` and pick the name). Vault members have a file in `vault-members/`. Someone outside the vault: a link only if they'll likely join (it stays unresolved until they do), else just their name.
@@ -76,7 +76,7 @@ Whenever you want to insert the project template (roughly necessary for projects
 1. **Need something done by someone else, or waiting for someone?** Create a subtask owned by them (**New** in the project's subtasks table, then change `owner`; written like `owner`, can be someone outside this vault). You stay reviewer, and it shows in your `5 Delegated`. If an item of yours can't go on until then, add the subtask to its `dependencies`.
 2. **Only need a project/task/note for later?** Set not-before to the date by when you want to see it properly. Until then it is in the later sections.
 3. **How to use Claude:** have Claudian open and ask it for help with your projects. (To hand an item to a VNA run, see *Creating items* 3.)
-4. **Finish** = `status: done` (or `cancelled` / `failed`). Needs a check? `review`: the reviewer checks and sets `done`, or clears the status with a comment to send it back. Should someone else check your own item, make them reviewer.
+4. **Finish** = `status: done` (or `cancelled` / `failed`; a `status: note` note: `note-archived`). Needs a check? `review`: the reviewer checks and sets `done`, or clears the status with a comment to send it back. Should someone else check your own item, make them reviewer.
 
 ## Working together
 
@@ -106,7 +106,7 @@ For big projects where creating the spec or planning the subtasks are themselves
 
 1. **`projects-tasks-notes/` — every project, task and note.** Items without a parent sit in its root (where **New** in [[me.base]] creates); a project with children gets a folder of the same name (without the `,`) holding them, e.g. `Vault tutorial exercise/`.
 	1. `handoffs/` — Claude session-handoff notes.
-	2. `archived/` — finished (`done` / `cancelled` / `failed`) items without a parent, a project with its folder; the nightly cleanup moves them here.
+	2. `archived/` — finished (`done` / `cancelled` / `failed` / `note-archived`) items without a parent, a project with its folder; the nightly cleanup moves them here.
 Less important:
 2. `periodic-auto-summaries/` — generated daily/weekly/monthly/… summaries of what changed in the vault.
 3. `other-files/` — scripts, automation config. also images and audio that don't clearly belong to a project.

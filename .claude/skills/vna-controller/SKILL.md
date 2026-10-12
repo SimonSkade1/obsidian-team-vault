@@ -34,7 +34,7 @@ close(project): if a child is `review`: set the project `review`, and its `revie
 
 ## States
 
-1. **Finished**: `review`, `done`, `failed`, `cancelled`. `review` asks a human to check something, and that holds nothing up. **Open**: everything else.
+1. **Finished**: `review`, `done`, `failed`, `cancelled`, `note-archived`. `review` asks a human to check something, and that holds nothing up. **Open**: everything else.
 2. **Queue children** of a project: its task and project children. Notes are no part of the run.
 3. **Ready**: `status` empty, the move is yours, `not_before` empty or past, and `blocked` = `-` in the children table (every dependency finished). The move is yours when `owner` is `claude`; the launch item's move is yours whatever its `owner`, and the `dependencies` and `not_before` it had when the user started you do not count. An item a human owns is that human's move: it waits, and holds up only what depends on it. So do `inbox` and `in-progress`. Hence the run goes on past a checkpoint wherever nothing depends on it, and a project stays open while a child is a human's. Where a queue child in `inbox` or `in-progress` looks as if it was meant for the run (a checkpoint never is), tell the user.
 

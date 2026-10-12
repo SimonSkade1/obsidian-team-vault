@@ -53,7 +53,7 @@ WIKILINK_RE = re.compile(r'^!?\[\[(.+?)\]\]$')
 LIST_ITEM_RE = re.compile(r'^\s*-\s+(.*)$')            # a block-list item in the frontmatter
 CHILD_HEADERS = ('#', 'blocked', 'type', 'status', 'owner', 'reviewer',
                  'priority', 'not_before', 'due', 'model', 'effort', 'dependencies', 'path')
-FINISHED = ('review', 'done', 'cancelled', 'failed')     # a dependency blocks only while unfinished
+FINISHED = ('review', 'done', 'cancelled', 'failed', 'note-archived')     # a dependency blocks only while unfinished
 
 KIND_BY_EXT = {'.md': 'md', '.pdf': 'pdf', '.canvas': 'canvas', '.base': 'base'}
 for _e in ('.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.avif', '.bmp'):
@@ -383,8 +383,8 @@ def dependency_cells(ctx, rows):
 
 
 def child_type(name, fm):
-    """Same rule as the bases' `type` formula: `status: note` or a `;` prefix = note."""
-    if (fm.get('status', '') or '').strip() == 'note' or name.startswith(';'):
+    """Same rule as the bases' `type` formula: status `note` / `note-archived` or a `;` prefix = note."""
+    if (fm.get('status', '') or '').strip() in ('note', 'note-archived') or name.startswith(';'):
         return 'note'
     return 'project' if name.startswith(',') else 'task'
 

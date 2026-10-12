@@ -46,4 +46,4 @@ For Claude when grading (members: peek if stuck). Read the tutorial project with
 5. Slips worth naming when you see them: a `,` or `;` prefix missing or followed by a space; `parent` typed by hand without quotes and brackets; a name that already exists in the vault; items created with **New** in `me.base` (they land parentless in the `projects-tasks-notes/` root) instead of in the project's table.
 
 On `copy the questions …`: paste the `## Questions` section from this note's `# Spec` verbatim — heading included, this answer key excluded — at the end of the tutorial project's `# Spec` section.
-On `mark … everything in it done`: set `status: done` on the tutorial project and on every descendant whose status is not already terminal (leave `cancelled` as it is). Never delete tutorial files.
+On `mark … everything in it done`: set `status: done` on the tutorial project and on every descendant whose status is not already terminal (leave `cancelled` as it is; a `status: note` note gets `note-archived`). Never delete tutorial files.

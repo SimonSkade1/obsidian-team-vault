@@ -1,0 +1,12 @@
+# Runs team-vault-filename-check.service every 10 minutes (see that unit). Linked and enabled by install.sh.
+[Unit]
+Description=Team vault — file names Windows can hold, every 10 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=10min
+AccuracySec=1min
+Unit=team-vault-filename-check.service
+
+[Install]
+WantedBy=timers.target
