@@ -16,7 +16,7 @@ systemctl --user link --force "$HERE/team-vault-filename-check.service"
 systemctl --user enable --now --force "$HERE/team-vault-filename-check.timer"
 
 systemctl --user daemon-reload
-systemctl --user list-timers --no-pager | head -6
+systemctl --user list-timers --no-pager | head -6 || true  # head closes the pipe early: SIGPIPE must not end the script here
 
 # A --user timer exists only while the user has a login session, so on a host you
 # ssh into and log out of it would silently stop firing. Enabling lingering needs

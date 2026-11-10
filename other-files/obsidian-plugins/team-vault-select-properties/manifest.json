@@ -1,0 +1,9 @@
+{
+  "id": "team-vault-select-properties",
+  "name": "Team vault select properties",
+  "version": "1.4.0",
+  "minAppVersion": "1.14.4",
+  "description": "Dropdowns for status, owner, reviewer and subscribers in the Properties panel and Bases tables of the Team vault; keeps the nine header keys of items when Bases empties one; starts new items with their subtasks table and, in projects-tasks-notes/, the header keys plus created_by; embedded bases at pane width.",
+  "author": "PauseAI Global",
+  "isDesktopOnly": false
+}

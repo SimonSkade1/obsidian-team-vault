@@ -1,32 +1,3 @@
----
-status:
-priority:
-parent:
-owner:
-reviewer:
-not_before:
-subscribers:
----
-
-
-![[subtasks.base]]
-
-
-
-# Purpose / goal clarification / success criteria
-
-
-
-# Spec
-
-
-
-# Notes
-
-
-
-
-
 # Install and setup
 
 One-time setup of the vault on your machine (~10 minutes). Once it is done, read [[README]].
@@ -54,13 +25,14 @@ Three programs: **Syncthing** keeps the folder in sync, **Obsidian** edits it, *
 	3. That hub is the only device you ever add for this folder, and you share it with nobody else: everything travels through it. The price is that while the hub is down your edits wait on your machine and arrive when it is back (nothing is lost); the gain is a single authoritative copy, and no laptop that was offline for a month pushing its stale deletions onto everyone.
 	4. *Worked when:* the folder says **Up to Date** and the path you chose contains `README.md`, `me.base` and `projects-tasks-notes/`. Wait for **Up to Date** before step 6 — the later steps rely on files that have to arrive first.
 6. **Open the folder as a vault and install Claudian.** Obsidian → *Open folder as vault* → the path from step 5. A **Restricted mode** dialog appears → **Turn on community plugins**; if no dialog shows up — you had opened this folder before, or clicked the dialog away once — **Settings → Community plugins → Turn on community plugins** is the same switch. On that same page: **Browse** → search `Claudian` → **Install** → **Enable**. Then **Settings → General → Command line interface** → switch it on and follow its prompt to register the `obsidian` command (macOS asks for your password): that is how Claude reaches the running Obsidian — to finish step 7 by itself and, later, to move and rename notes without breaking links.
-	1. *Worked when:* a robot icon sits in the left ribbon — that is Claudian, Claude Code inside Obsidian — and clicking it opens a chat pane. If the pane complains that it cannot find `claude` (a windowed app may not see your shell's PATH), put the path that `which claude` prints in a terminal (Windows: `where claude`) into **Settings → Claudian → Advanced → Claude CLI path** — or take the terminal route in 7.2.
+	1. *Worked when:* a robot icon sits in the left ribbon — that is Claudian, Claude Code inside Obsidian — and clicking it opens a chat pane. If the pane complains that it cannot find `claude` (a windowed app may not see your shell's PATH), put the path that `which claude` prints in a terminal (Windows: `where claude`) into **Settings → Claudian → Advanced → Claude CLI path** — or take the terminal route in 7.1.
 7. **Tell Claude to complete the setup.** In the Claudian pane type:
 
 	```
 	complete the setup
 	```
 
-	It asks for your first name — lowercase; it names your file in `vault-members/`, which the others link in `owner` and `reviewer` — and then does everything that can be done from disk: the Syncthing ignore line that keeps your private files off the network, Templater, Hidden Folders Access (shows the `.claude` folder) and Outliner downloaded into the vault's plugin folder and switched on, your own checked copy of the note templates with the **Alt+P** hotkey for the project sections (a new note's `owner` and `parent` are filled by the **New** button itself), new notes landing beside the note you are in, your identity note `_local/me.md` and member file `vault-members/<name>.md`, and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
+	It asks for your first name — lowercase; it names your file in `vault-members/`, which the others link in `owner` and `reviewer` — and then does everything that can be done from disk: the Syncthing ignore line that keeps your private files off the network, Templater, Hidden Folders Access (shows the `.claude` folder) and Outliner downloaded into the vault's plugin folder and switched on, likewise the vault's own Team vault select properties (dropdowns for `status`, `owner`, `reviewer` and `subscribers`), your own checked copy of the note templates with the **Alt+P** hotkey for the project sections (a new note's `owner` and `parent` are filled by the **New** button itself), new notes landing beside the note you are in, your identity note `_local/me.md` and member file `vault-members/<name>.md`, and your personal `.claude/CLAUDE.md`. Approve the commands it asks to run.
+	1. **Terminal route**, if the pane won't work: open a terminal in the vault folder, run `claude` and type `complete the setup` there.
 8. **Read [[README]]** (5 minutes), then do the five-minute exercise in [[,Vault tutorial exercise]].
-9. **Optional — a private folder.** Tell Claude `set up my private folder`: it creates `private-projects-tasks-notes/` and `private.base` (`me.base` over that folder). Same prefixes, properties and subtasks table as the shared tree, but both stay on this machine — the shared ignore list excludes them — so nobody else sees them and nothing backs them up. Don't link to a private note from a shared one: the others would see its title as a dead link.
+9. **Optional — a private folder.** Tell Claude `set up my private folder`: it creates `private-projects-tasks-notes/` and `private.base` (`me.base` over that folder). Same properties and subtasks table as the shared tree, but both stay on this machine — the shared ignore list excludes them — so nobody else sees them and nothing backs them up unless you arrange it: Claude suggests ways and helps, or backs the folder up to the team's hub, if you're comfortable with the hub admin technically being able to read it there. Don't link to a private note from a shared one: the others would see its title as a dead link.

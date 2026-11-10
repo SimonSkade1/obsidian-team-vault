@@ -5,7 +5,7 @@ description: Query, create, and edit Obsidian Bases (.base files) — views, fil
 
 # Obsidian Bases
 
-Base files are YAML defining database-like views over vault notes. This vault's bases: `me.base` (everything in `projects-tasks-notes/`, first view filtered to the current user), `subtasks.base` (embedded at the top of every project: *my project overview* / *everyone project overview* list its direct children, *my project subprojects* / *everyone project subprojects* its whole subtree grouped like the projects views; a finished item stays while its parent is open, a finished subtree collapses to its top item) and `recent.base` (recently modified notes). `me.base` and `subtasks.base` carry the same `formulas:` block verbatim (Bases has no include mechanism) — change one and change the other in the same edit, or the views of an item disagree. `private.base` (a member's unsynced base, if they have one) is `me.base` with the folder swapped: after changing `me.base`, regenerate it with the `sed` line in the `setup-member` skill. `vault-members/<name>.base` (synced, one per member) is `me.base` as that member sees it: the formula `me` (whose view; in `me.base` it is `formula.user`, the name in `_local/me.md`) is their name, written in by `python3 .claude/scripts/member_bases.py` — run it after changing `me.base`; the nightly review runs it too and overwrites hand edits. (Not derived from `this.file.basename`: `base:query` leaves `this` null.) People values (`owner`, `reviewer`, `subscribers`) are links, `"[[simon]]"`, but plain names still work: `own`, `rev`, `subscribed` and `parent_own` reduce both to the bare lowercase name with one `replace` that drops `[[`, a path, `.md`, an `|alias` and `]]` (a link's `toString()` is its source text, `[[simon]]`). After `section` come `parent_terminal`, `nested`, `nested_any`, `status_sec` (`me.base`'s *overview* views hide items whose parent has the same owner — those are seen in the project's table — except the user's items of sections 1–3 and 6, `status_sec`) and the group key `pgroup` of the *projects* and *subprojects* views (next section).
+Base files are YAML defining database-like views over vault notes. This vault's bases: `me.base` (everything in `projects-tasks-notes/`, first view filtered to the current user), `subtasks.base` (embedded at the top of every project: *my project overview* / *everyone project overview* list its direct children plus the live and important items anywhere below it (`live`: status `inbox`, `in-progress`, `review` or `discuss`, neither blocked nor deferred; `important`: an open task or project of `effective_priority` 7+, so `due` counts; the *my* view only the important ones and those of sections 1–4), *my project subprojects* / *everyone project subprojects* its whole subtree grouped like the projects views; a finished item stays while its parent is open, a finished subtree collapses to its top item; *my board* / *everyone board* are kanbans of the direct children by `status`) and `recent.base` (recently modified notes). `me.base` and `subtasks.base` carry the same `formulas:` block verbatim (Bases has no include mechanism) — change one and change the other in the same edit, or the views of an item disagree. `private.base` (a member's unsynced base, if they have one) is `me.base` with the folder swapped: after changing `me.base`, regenerate it with the `sed` line in the `setup-member` skill. `vault-members/<name>.base` (synced, one per member) is `me.base` as that member sees it: the formula `me` (whose view; in `me.base` it is `formula.user`, the name in `_local/me.md`) is their name, written in by `python3 .claude/scripts/member_bases.py` — run it after changing `me.base`; the nightly review runs it too and overwrites hand edits. (Not derived from `this.file.basename`: `base:query` leaves `this` null.) People values (`owner`, `reviewer`, `subscribers`) are links, `"[[simon]]"`, but plain names still work: `own`, `rev`, `subscribed` and `parent_own` reduce both to the bare lowercase name with one `replace` that drops `[[`, a path, `.md`, an `|alias` and `]]` (a link's `toString()` is its source text, `[[simon]]`). After `section` (`0 Critical`: `important`, `mine` and `priority` 9+ — the raw value, so `due` does not count — checked after the terminal, blocked and deferred branches) come `parent_terminal`, `parented_note`, `nested`, `nested_any`, `live`, `important` (`me.base`'s *overview* views and boards hide items whose parent has the same owner, and notes with a parent — those are seen in the project's table — unless they are live or important), the group key `pgroup` of the *projects* and *subprojects* views (next section) and `sec_group`, the key of the *overview* views: the section, and for a live or important item under a project `<section> › <project names down to its parent>` — in `subtasks.base` the part below the embedding project, so a direct child keeps the bare section. Grouped ASC, so a section's own rows precede its project subgroups, which are alphabetical (a priority prefix would put low priority first).
 
 ## The projects views' group key
 
@@ -26,7 +26,9 @@ A base's **New** button writes properties into the new note from the filters: ev
 
 	The pair is always true, so it selects the same rows (plain names, links and empty values alike); its one job is that the first rule fills `owner` with a link to the member whose view it is, `"[[simon]]"` (`formula.me`; without the `if`, a missing identity note gives `link("")`, a link to the new note itself). `me.base` has the same pair for `reviewer` with `formula.user`, so New in a member's copy makes them the owner and the person pressing it the reviewer. Keep it although it looks redundant in the filter UI — a YAML comment would not survive Obsidian's re-saves of the file, so the explanation lives here.
 
-This is undocumented Obsidian behaviour, verified on 1.13.7: if new notes stop getting their `owner` after an Obsidian update, check this first. The top-level keys `newItemFolder` (where New creates the note) and `newItemTemplate` (copies that note's properties instead, which switches the filter pre-fill off) exist as well.
+3. The reverse: a view filter that only selects must not be a `prop == value` rule, or New writes that value too. Example: a view taking everyone's `discuss` items with `status == "discuss"` would give every new item `status: discuss`. Where such a rule is needed, write it as `'["discuss"].contains(status)'`: the same rows, skipped by the pre-fill (its left side is a list, not a property).
+
+This is undocumented Obsidian behaviour, verified on 1.13.7: if new notes stop getting their `owner` after an Obsidian update, check this first. The top-level keys `newItemFolder` (where New creates the note) and `newItemTemplate` (copies that note's properties instead — never its body — which switches the filter pre-fill off) exist as well. The body of a new item, `![[subtasks.base]]`, comes from the vault's plugin `team-vault-select-properties`, not from the base.
 
 ## Querying a base
 
@@ -53,7 +55,7 @@ To understand a base's structure, just read the `.base` file — human-readable 
 1. **Create the file**: Create a `.base` file with valid YAML
 2. **Define scope**: Add `filters` to select which notes appear (by tag, folder, property, or date)
 3. **Add formulas** (optional): Define computed properties in the `formulas` section
-4. **Configure views**: Add one or more views (`table`, `cards`, `list`, or `map`) with `order` specifying which properties to display
+4. **Configure views**: Add one or more views (`table`, `cards`, `list`, `map` or `kanban`) with `order` specifying which properties to display
 5. **Validate**: Verify valid YAML; check all referenced properties/formulas exist. Common issues: unquoted strings with special YAML characters, mismatched quotes in formulas, referencing `formula.X` without defining `X` in `formulas`
 6. **Test**: Run `base:query` on each changed view (`bases_render.sh` where order or groups matter) to confirm it parses and returns the expected rows. On YAML error, check quoting rules below
 
@@ -87,7 +89,7 @@ summaries:
 
 # Define one or more views
 views:
-  - type: table | cards | list | map
+  - type: table | cards | list | map | kanban
     name: "View Name"
     limit: 10                    # Optional: limit results
     groupBy:                     # Optional: group results
@@ -295,6 +297,34 @@ views:
   - type: map
     name: "Locations"
     # Map-specific settings for lat/lng properties
+```
+
+### Kanban View
+
+Obsidian ≥ 1.14 (`bases_render.sh` renders one as its groups, empty columns omitted). The columns are the values of the `groupBy` property, in the order of `groupOrder`, where `null` is the no-value column (labelled *None*) and a value left out of the list is a hidden column; the column menu writes `groupOrder` and `columnWidth`. Dragging a card writes the property into the note (`processFrontMatter`; a drop into *None* deletes the key — this vault's plugin re-inserts the nine header keys, so it survives, empty), which is why the group property must be a plain note property: grouped by a formula, or by a file property other than `file.folder`, the board is read-only. `order` is the properties shown on a card, `sort` applies within every column, and the column's **+** creates a note in `newItemFolder` with the column's value plus the filter pre-fill (section above). This vault's boards: `my board` in `me.base` (open items by `status`, hiding `nested` ones unless `live` or `important`, like *my overview*; `done` and `cancelled` kept short with `or: ["!formula.terminal", 'file.mtime > now() - "7d"']` in the view filter), `everyone board` there (the same for everyone, `owner` on the cards; `nested_any` items hidden unless `live` or `important`) and `my board` / `everyone board` in `subtasks.base` (a project's direct children, all finished ones shown).
+
+```yaml
+views:
+  - type: kanban
+    name: board
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder:
+      - inbox
+      - null
+      - in-progress
+      - review
+      - done
+      - cancelled
+    order:
+      - file.name
+      - owner
+      - priority
+      - due
+    sort:
+      - property: formula.effective_priority
+        direction: DESC
 ```
 
 ## Default Summary Formulas

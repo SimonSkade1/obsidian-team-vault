@@ -6,8 +6,8 @@ Claude). An item is unassigned when its `owner` is empty and its status is
 not terminal — exactly the "Unassigned" view of me.base: every .md under projects-tasks-notes/ except archived/, handoffs/ and
 .sync-conflict- copies; a file without properties counts too.
 
-It nags once per item: an item already linked from any "!check unassigned
-items …" file (any status, archived ones too) is covered. When new, uncovered
+It nags once per item: an item already linked from any "check unassigned
+items …" file (any status, archived ones too; old names start with "!") is covered. When new, uncovered
 items exist it appends them to the open check task if there is one, else files
 a new dated task for simon (status inbox, priority 6) in projects-tasks-notes/.
 So there is at most one open check task, and nothing is filed twice.
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 TERMINAL = {"done", "cancelled", "failed", "note-archived"}
-CHECK_PREFIX = "!check unassigned items"
+CHECK_PREFIX = "check unassigned items"
 OWNER = "simon"
 PRIORITY = 6
 
@@ -66,8 +66,8 @@ def wikilinks(text):
 
 
 def kind(basename, fm):
-    """Same rule as the bases' `type` formula: status `note` / `note-archived` or a `;` prefix = note."""
-    if fm.get("status", "") in ("note", "note-archived") or basename.startswith(";"):
+    """Note rule as in the bases' `type` formula: status `note` / `note-archived` = note (a `;` prefix is orientation only)."""
+    if fm.get("status", "") in ("note", "note-archived"):
         return "note"
     return "project" if basename.startswith(",") else "task"
 
@@ -116,12 +116,12 @@ def main(argv):
         return 2
 
     files = scan(root)
-    checks = [f for f in files if f[1].startswith(CHECK_PREFIX)]          # any status, archived too
+    checks = [f for f in files if f[1].lstrip("!").startswith(CHECK_PREFIX)]          # any status, archived too
     covered = set().union(*(wikilinks(f[3]) for f in checks)) if checks else set()
     open_checks = [f for f in checks if f[2].get("status", "").lower() not in TERMINAL]
 
     in_scope = [f for f in files if "/archived/" not in "/" + f[0] and "/handoffs/" not in "/" + f[0]
-                and ".sync-conflict-" not in f[1] and not f[1].startswith(CHECK_PREFIX)]
+                and ".sync-conflict-" not in f[1] and not f[1].lstrip("!").startswith(CHECK_PREFIX)]
     unassigned = [f for f in in_scope
                   if f[2].get("owner", "") == "" and f[2].get("status", "").lower() not in TERMINAL]
     new = [f for f in unassigned if f[1] not in covered]

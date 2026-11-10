@@ -23,3 +23,5 @@ Once the handling is decided, append one line to `other-files/VNA-exceptions-log
 ```
 YYYY-MM-DD · [[item]] · what was wrong · how it was handled
 ```
+
+For a private item, write `(a private item of <user>'s)` in place of `[[item]]`, and say what was wrong and how it was handled as a matter of the VNA process, without its specific content.

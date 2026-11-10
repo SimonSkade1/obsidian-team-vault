@@ -1,0 +1,117 @@
+/* Team vault select properties (see main.js): look like the plain value, show the dropdown on hover/focus. */
+.psp-single {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+select.psp-select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: var(--input-radius);
+  width: 100%;
+  min-width: 0;
+  padding: var(--input-padding);
+  padding-inline-end: calc(var(--size-4-2) + var(--icon-xs));
+  font-family: inherit;
+  font-size: var(--metadata-input-font-size);
+  color: var(--metadata-input-text-color, var(--text-normal));
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: var(--cursor);
+}
+@media (hover: hover) {
+  select.psp-select:hover {
+    background-color: var(--background-modifier-hover);
+    box-shadow: none;
+  }
+}
+select.psp-select.is-empty {
+  color: var(--text-faint);
+}
+/* An empty value's label ("[Empty/TODO]") shows in the open list and the Properties panel, not in table cells. */
+.bases-td select.psp-select.is-empty {
+  color: transparent;
+}
+select.psp-select option.psp-empty {
+  color: var(--text-muted);
+}
+select.psp-select.is-invalid {
+  color: var(--text-error);
+}
+select.psp-select option {
+  color: var(--text-normal);
+  background-color: var(--background-primary);
+}
+select.psp-select option.is-invalid {
+  color: var(--text-error);
+}
+.bases-td select.psp-select:focus-visible {
+  box-shadow: none;
+}
+.psp-chevron {
+  position: absolute;
+  inset-inline-end: var(--size-2-2);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  pointer-events: none;
+  color: var(--text-faint);
+  opacity: 0;
+  --icon-size: var(--icon-xs);
+  --icon-stroke: var(--icon-xs-stroke-width);
+}
+.psp-single:hover .psp-chevron,
+.psp-single:focus-within .psp-chevron {
+  opacity: 1;
+}
+
+/* subscribers: Obsidian's own pills, plus a small add-dropdown */
+.psp-multi {
+  cursor: default;
+}
+.psp-multi .multi-select-pill.psp-other .multi-select-pill-content {
+  font-style: italic;
+}
+select.psp-select.psp-add {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 var(--size-2-3);
+  color: var(--text-faint);
+}
+.bases-td .psp-multi select.psp-add {
+  opacity: 0;
+}
+.bases-td:hover .psp-multi select.psp-add,
+.bases-td .psp-multi:focus-within select.psp-add {
+  opacity: 1;
+}
+.psp-other-input {
+  width: 100%;
+}
+
+/* Embedded bases take the pane width while the text keeps "Readable line length" (desktop only).
+ * The scrolling pane is made a size container so 100cqw is its content width; the embed is widened
+ * through Obsidian's own --bases-embed-width hook and shifted with `left` (its margins are !important 0),
+ * centred on the pane: Live Preview puts a fold gutter left of .cm-content, hence the sizer term. */
+.markdown-source-view.mod-cm6.is-readable-line-width .cm-scroller,
+.markdown-preview-view.is-readable-line-width {
+  container-type: inline-size;
+}
+body:not(.is-mobile) .markdown-source-view.mod-cm6.is-readable-line-width .cm-content > .bases-embed {
+  --bases-embed-width: calc(100cqw - 2px);
+  position: relative;
+  left: calc(100% - min(var(--file-line-width), 100cqw) / 2 - var(--bases-embed-width) / 2);
+}
+body:not(.is-mobile) .markdown-preview-view.is-readable-line-width .bases-embed {
+  --bases-embed-width: calc(100cqw - 2px);
+  position: relative;
+  left: calc(50% - var(--bases-embed-width) / 2);
+}

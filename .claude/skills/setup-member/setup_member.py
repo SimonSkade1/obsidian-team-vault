@@ -5,6 +5,8 @@ done from disk. Driven by the `setup-member` skill; safe to run by hand.
     python3 .claude/skills/setup-member/setup_member.py --name <firstname>
     python3 .claude/skills/setup-member/setup_member.py --dry-run
     python3 .claude/skills/setup-member/setup_member.py --update-templates
+    python3 .claude/skills/setup-member/setup_member.py --update-plugin
+    python3 .claude/skills/setup-member/setup_member.py --private-backup [--dry-run]
     (Windows: `py -3` instead of `python3`)
 
 Every action first checks whether it is already true, so re-running changes
@@ -18,7 +20,10 @@ The note templates are JavaScript that Templater runs when the member calls thei
 (Alt+P, "Insert properties"), so the folder Templater runs is this machine's
 `local_templates/` (never synced), filled from the shared `shared_templates/` only after a
 scan for code a template has no business containing; a shared template that changed after
-the copy is printed as a diff and copied only with `--update-templates`. Templater's
+the copy is printed as a diff and copied only with `--update-templates`. The vault's own
+plugin (the `PLUGINS` entry with `src`) is code too, run by Obsidian at startup: copied from
+its synced folder on first install, a file there that changed after the copy likewise only
+with `--update-plugin`. Templater's
 creation trigger (device-local, Obsidian's localStorage) is switched OFF through the
 `obsidian` CLI when there is one — see act_creation_trigger for why; a new note's `owner`
 and `parent` come from the bases' New button instead. The member's file in `vault-members/`
@@ -57,6 +62,7 @@ VAULT = Path(__file__).resolve().parents[3]
 
 # Plugins installed from their latest GitHub release. All are also in Obsidian's
 # community directory (ids below), so "Browse" in Obsidian is the manual route.
+# Except an entry with `src`: the vault's own plugin, copied from that synced folder.
 PLUGINS = [
     {"id": "templater-obsidian", "name": "Templater", "repo": "SilentVoid13/Templater"},
     {"id": "realclaudian", "name": "Claudian", "repo": "YishenTu/claudian"},
@@ -65,8 +71,15 @@ PLUGINS = [
     {"id": "hidden-folders-access", "name": "Hidden Folders Access",
      "repo": "dsebastien/obsidian-hidden-folders-access"},
     {"id": "obsidian-outliner", "name": "Outliner", "repo": "vslinko/obsidian-outliner"},
+    # Dropdowns for `status`, `owner`, `reviewer`, `subscribers` in the Properties panel and Bases
+    # tables. Writes plain values, so a member without it just has the normal text fields.
+    {"id": "team-vault-select-properties", "name": "Team vault select properties",
+     "src": "other-files/obsidian-plugins/team-vault-select-properties"},
 ]
 HIDDEN_FOLDERS = [".claude"]  # the root dot-folders Hidden Folders Access is told to index
+# Obsidian's Excluded files (`/…/` = a regex): a JS checkout in external-projects/ otherwise puts
+# thousands of dependency READMEs into search and the quick switcher.
+IGNORE_FILTERS = ["/node_modules/"]
 ASSETS = ["main.js", "manifest.json", "styles.css"]
 
 SHARED_TEMPLATES = "shared_templates"   # the synced source, changed by agreement
@@ -95,6 +108,10 @@ CLAUDIAN_SETTINGS = ".claudian/claudian-settings.json"
 CLAUDIAN_FIRST_DIRS = ["/usr/local/bin", "/opt/homebrew/bin", "/usr/bin", "/bin"]
 HOTKEY = {"modifiers": ["Alt"], "key": "P"}
 IGNORE_LINE = "#include .stignore-shared"
+PRIVATE_DIR = "private-projects-tasks-notes"  # the member's unsynced folder (skill: Private folder)
+# The hub (automation host, `<HUB-NAME>`; INSTALL_AND_SETUP step 1). Not secret. `--private-backup`
+# shares with it only after checking that this vault's folder is shared with it too.
+HUB_DEVICE_ID = "<HUB-DEVICE-ID>"
 
 # The `## User` opener written into .claude/CLAUDE.md, and the exact first line it gets
 # when no name is known anywhere — a CLAUDE.md still carrying that line is a stub to redo.
@@ -110,12 +127,16 @@ NAMELESS_LINE = (CLAUDE_MD_INTRO % ("You", NAMELESS)).split("\n", 1)[0]
 DONE, ALREADY, NEEDS_YOU, FAILED = "done", "already done", "needs you", "failed"
 
 results = []  # (action, status, detail)
-diffs = []  # unified diffs of shared templates that changed since their copy, printed after the table
+diffs = []  # unified diffs of shared files (templates, the vault plugin) that changed since their copy, printed after the table
 
 
 def report(action, status, detail=""):
     results.append((action, status, detail))
     return status
+
+
+def add_diff(old, new, old_name, new_name):
+    diffs.append("".join(difflib.unified_diff(old.splitlines(True), new.splitlines(True), old_name, new_name)))
 
 
 # --------------------------------------------------------------------------- io
@@ -193,7 +214,9 @@ def act_member_file(name, dry_run):
     return report(MEMBERS + "/" + name + ".md", DONE, "your member file: links to you now resolve")
 
 
-def act_plugin(plugin, dry_run):
+def act_plugin(plugin, update, dry_run):
+    if "src" in plugin:
+        return act_vault_plugin(plugin, update, dry_run)
     folder = VAULT / ".obsidian" / "plugins" / plugin["id"]
     manifest = folder / "manifest.json"
     if manifest.exists() and (folder / "main.js").exists():
@@ -227,6 +250,46 @@ def act_plugin(plugin, dry_run):
         shutil.rmtree(staging, ignore_errors=True)
 
 
+def act_vault_plugin(plugin, update, dry_run):
+    """The vault's own plugin is code Obsidian runs at startup, so it is handled like the
+    templates: copied from its synced folder on first install; once a copy exists, a file there
+    that differs from it is printed as a diff and copied only once a person has read it
+    (`--update-plugin`). A new `version` in manifest.json makes the plugin show a notice asking for
+    "complete the setup". Contents are compared, not only the version, so a copy taken while the
+    folder was half-synced shows up too."""
+    action = plugin["name"] + " plugin files"
+    src = VAULT / plugin["src"]
+    folder = VAULT / ".obsidian" / "plugins" / plugin["id"]
+    want = read_json(src / "manifest.json", {}) or {}
+    if want.get("id") != plugin["id"] or not (src / "main.js").exists():
+        return report(action, NEEDS_YOU, "%s/ has not arrived yet — let the folder reach \"Up to Date\", "
+                      "then re-run" % plugin["src"])
+    assets = [a for a in ASSETS if (src / a).exists()]
+    have = (read_json(folder / "manifest.json", {}) or {}).get("version")
+    changed = [a for a in assets if not ((folder / a).exists() and filecmp.cmp(src / a, folder / a, shallow=False))]
+    if not changed:
+        return report(action, ALREADY, "v%s in .obsidian/plugins/%s/" % (have, plugin["id"]))
+    if (folder / "manifest.json").exists() and not update:  # the manifest is copied last: a copy exists
+        for a in changed:
+            old = (folder / a).read_text(encoding="utf-8", errors="replace") if (folder / a).exists() else ""
+            add_diff(old, (src / a).read_text(encoding="utf-8", errors="replace"),
+                     ".obsidian/plugins/%s/%s" % (plugin["id"], a), "%s/%s" % (plugin["src"], a))
+        return report(action, NEEDS_YOU, "%s changed in %s/ since the copy (v%s there, v%s installed) \u2014 read "
+                      "the diff printed below, then re-run with --update-plugin"
+                      % (", ".join(changed), plugin["src"], want.get("version", "?"), have or "?"))
+    detail = "v%s → .obsidian/plugins/%s/ (from %s/%s)" % (
+        want.get("version", "?"), plugin["id"], plugin["src"], ", replacing v%s" % have if have else "")
+    if dry_run:
+        return report(action, DONE, "would copy " + detail)
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+        for asset in sorted(assets, key=lambda a: a == "manifest.json"):  # the manifest last
+            shutil.copyfile(src / asset, folder / asset)
+    except OSError as exc:
+        return report(action, FAILED, "copy failed (%s)" % exc)
+    return report(action, DONE, detail)
+
+
 def act_local_templates(update, dry_run):
     """Templater runs whatever is in local_templates/ when the member calls its commands: copy
     the shared templates there only after the scan, and one that changed since its copy only
@@ -249,9 +312,7 @@ def act_local_templates(update, dry_run):
             same.append(src.name)
         elif have is not None and not update:
             changed.append(src.name)
-            diffs.append("".join(difflib.unified_diff(have.splitlines(True), text.splitlines(True),
-                                                      LOCAL_TEMPLATES + "/" + src.name,
-                                                      SHARED_TEMPLATES + "/" + src.name)))
+            add_diff(have, text, LOCAL_TEMPLATES + "/" + src.name, SHARED_TEMPLATES + "/" + src.name)
         else:
             write_text(dst, text, dry_run)
             copied.append(src.name + (" (updated)" if have is not None else ""))
@@ -474,6 +535,23 @@ def act_new_file_location(dry_run):
     return report("New notes beside their project", DONE, "app.json newFileLocation: current")
 
 
+def act_excluded_files(dry_run):
+    path = VAULT / ".obsidian" / "app.json"
+    data = read_json(path, {})
+    if data is None or not isinstance(data, dict):
+        return report("node_modules out of search", NEEDS_YOU, "app.json is not a JSON object — delete it and re-run")
+    filters = data.get("userIgnoreFilters") or []
+    if not isinstance(filters, list):
+        return report("node_modules out of search", NEEDS_YOU, "app.json userIgnoreFilters is not a list — fix it in "
+                      "Settings → Files and links → Excluded files and re-run")
+    missing = [f for f in IGNORE_FILTERS if f not in filters]
+    if not missing:
+        return report("node_modules out of search", ALREADY, "Excluded files: " + ", ".join(IGNORE_FILTERS))
+    data["userIgnoreFilters"] = filters + missing
+    write_json(path, data, dry_run)
+    return report("node_modules out of search", DONE, "app.json userIgnoreFilters: " + ", ".join(missing))
+
+
 def act_claude_md(name, dry_run):
     path = VAULT / ".claude" / "CLAUDE.md"
     # `_local/me.md` wins over `--name`: it is the name the bases actually read, this
@@ -600,6 +678,53 @@ def act_syncthing_ignores(dry_run):
                   "folder — to apply it now, paste \"%s\" into the folder's Edit \u2192 Ignore Patterns" % IGNORE_LINE)
 
 
+def act_private_backup(dry_run):
+    """`--private-backup` only: share private-projects-tasks-notes/ send-only with the hub as folder
+    `<user>-private-notes`, for the hub admin to accept there as a receive-only backup (VPS_SETUP_INFO.md).
+    Shared with the hub alone, and only once the hub is confirmed as the device this vault syncs through."""
+    user = identity_name()
+    path = VAULT / PRIVATE_DIR
+    if not user:
+        return report("Private backup", FAILED, "no `user:` in _local/me.md — run the normal setup first")
+    fid = user + "-private-notes"
+    action = "Private backup " + fid
+    if not path.is_dir():
+        return report(action, NEEDS_YOU, "%s/ does not exist — set the private folder up first" % PRIVATE_DIR)
+    api = syncthing_api()
+    if not api:
+        return report(action, FAILED, "no local Syncthing config.xml found")
+    base, key = api
+
+    def same(p):
+        return os.path.normcase(os.path.realpath(os.path.expanduser(p or "x")))
+
+    def device_ids(folder):
+        return [d.get("deviceID") for d in folder.get("devices") or []]
+
+    try:
+        my_id = st_call(base, key, "/rest/system/status")["myID"]
+        folders = st_call(base, key, "/rest/config/folders") or []
+        vault = [f for f in folders if same(f.get("path")) == same(str(VAULT))]
+        if not vault or HUB_DEVICE_ID not in device_ids(vault[0]):
+            return report(action, NEEDS_YOU, "this vault's Syncthing folder is not shared with the hub %s… — "
+                          "has the hub moved? Ask the hub admin" % HUB_DEVICE_ID[:7])
+        detail = "folder id %s, this device %s" % (fid, my_id)
+        for f in folders:
+            if f.get("id") == fid or same(f.get("path")) == same(str(path)):
+                if (f.get("id"), same(f.get("path")), f.get("type")) == (fid, same(str(path)), "sendonly") \
+                        and HUB_DEVICE_ID in device_ids(f):
+                    return report(action, ALREADY, detail)
+                return report(action, NEEDS_YOU, "Syncthing folder %s (path %s, %s) is in the way — fix or "
+                              "remove it by hand" % (f.get("id"), f.get("path"), f.get("type")))
+        if not dry_run:  # fields left out get Syncthing's folder defaults
+            st_call(base, key, "/rest/config/folders", {
+                "id": fid, "label": "%s private notes (backup)" % user, "path": str(path),
+                "type": "sendonly", "devices": [{"deviceID": my_id}, {"deviceID": HUB_DEVICE_ID}]})
+        return report(action, DONE, detail + " — offered to the hub; the hub admin accepts it there")
+    except (urllib.error.URLError, OSError, ValueError, KeyError, TypeError) as e:
+        return report(action, FAILED, "Syncthing API: %s" % e)
+
+
 # ------------------------------------------------------------------------ main
 
 def main():
@@ -615,6 +740,12 @@ def main():
     parser.add_argument("--update-templates", action="store_true",
                         help="replace a local template whose shared original changed, once its diff "
                              "(printed by a previous run) has been read")
+    parser.add_argument("--update-plugin", action="store_true",
+                        help="replace the installed copy of the vault's own plugin whose synced files "
+                             "changed, once their diff (printed by a previous run) has been read")
+    parser.add_argument("--private-backup", action="store_true",
+                        help="only this: share %s/ send-only with the hub, as a backup the hub admin can read "
+                             "(skill: Private folder)" % PRIVATE_DIR)
     args = parser.parse_args()
 
     for marker in ("README.md", "me.base", ".claude/CLAUDE_shared.md", SHARED_TEMPLATES + "/project.md"):
@@ -633,11 +764,18 @@ def main():
         sys.exit("--name should be a single first name with no spaces (any alphabet, e.g. joão): got %r"
                  % args.name)
 
+    if args.private_backup:
+        act_private_backup(args.dry_run)
+        print("vault: %s%s" % (VAULT, "   (DRY RUN — nothing written)" if args.dry_run else ""))
+        for action, status, detail in results:
+            print("  %s  %s  %s" % (action, status, detail))
+        return 0 if results[0][1] in (DONE, ALREADY) else 1
+
     act_syncthing_ignores(args.dry_run)  # first: nothing private below is written before its ignore line
     act_identity(name, args.dry_run)
     act_member_file(name, args.dry_run)
     for plugin in PLUGINS:
-        act_plugin(plugin, args.dry_run)
+        act_plugin(plugin, args.update_plugin, args.dry_run)
     act_local_templates(args.update_templates, args.dry_run)
     act_templater_settings(args.dry_run)
     act_creation_trigger(args.dry_run)
@@ -646,6 +784,7 @@ def main():
     act_community_plugins(args.dry_run)
     act_hotkey(args.dry_run)
     act_new_file_location(args.dry_run)
+    act_excluded_files(args.dry_run)
     act_claude_md(name, args.dry_run)
     act_settings_local(args.dry_run)
 

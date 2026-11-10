@@ -2,7 +2,7 @@
 // committed; the per-device .stignore is not (Syncthing never syncs .stignore).
 // On every machine, .stignore must exist and contain exactly the line:
 //   #include .stignore-shared
-// Order on a NEW machine (README step 5): let the first sync deliver this file,
+// Order on a NEW machine (INSTALL_AND_SETUP.md step 5): let the first sync deliver this file,
 // then write .stignore and reload the ignores — an #include of a file that does
 // not exist yet is an error and stops the folder from syncing at all. Nothing
 // leaks meanwhile: a fresh machine has none of the files below. On a machine
@@ -16,7 +16,7 @@
 /_local
 
 // Your Templater folder: the copy of shared_templates/ the setup made after
-// checking it (README step 7). A template is JavaScript that Templater runs by
+// checking it (INSTALL_AND_SETUP.md step 7). A template is JavaScript that Templater runs by
 // itself on every note you create, so only the copy checked on this machine
 // runs — never something that just arrived over the network.
 /local_templates

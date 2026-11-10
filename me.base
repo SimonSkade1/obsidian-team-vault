@@ -15,7 +15,7 @@ formulas:
   me: formula.user
   own: if(owner, owner.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), "")
   rev: if(reviewer, reviewer.toString().replace(/^\[\[([^\]|]*\/)?|(\.md)?(\|[^\]]*)?\]\]$/g, "").lower(), formula.own)
-  type: if(["note", "note-archived"].contains(status) || file.name.startsWith(";"), "note", if(file.name.startsWith(","), "project", "task"))
+  type: if(["note", "note-archived"].contains(status), "note", if(file.name.startsWith(",") || formula.kids.length > 0, "project", "task"))
   deferred: if(not_before, date(not_before) > now(), false)
   blocked: if(dependencies, list(dependencies).filter(value.asFile() && !["done", "cancelled", "failed", "note-archived", "review"].contains(value.asFile().properties.status)).length > 0, false)
   terminal: status == "done" || status == "cancelled" || status == "failed" || status == "note-archived"
@@ -26,11 +26,13 @@ formulas:
   mine: formula.me == "" || formula.own == formula.me || formula.rev == formula.me || formula.subscribed
   effective_priority: if(priority.isEmpty(), 5, priority) + if(due, if(date(due) < today(), 2, if(date(due) < today() + "1 day", 1, 0)), 0)
   archived_subscribed: formula.terminal && formula.subscribed && formula.own != formula.me && formula.rev != formula.me
-  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "14 Archived Subscribed", if(formula.type == "note", "13 Archived Notes", "12 Archived")), if(formula.blocked, "9 Blocked", if(formula.deferred, if(formula.type == "note", "11 Later Notes", "10 Later Tasks"), if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.rev == formula.me && status == "review", "3 Review", if(formula.own == formula.me && status == "review", "6 Awaiting Review", if(formula.type == "note", "8 Notes", if(formula.own == formula.me, "4 Your Tasks", if(formula.rev == formula.me, "5 Delegated", if(formula.subscribed, "7 Subscribed", "15 Others"))))))))))))'
+  section: 'if(formula.me == "", "0 ⚠ create _local/me.md with user: <your name>", if(formula.terminal, if(formula.archived_subscribed, "15 Archived Subscribed", if(formula.type == "note", "14 Archived Notes", "13 Archived")), if(formula.blocked, "10 Blocked", if(formula.deferred, if(formula.type == "note", "12 Later Notes", "11 Later Tasks"), if(formula.important && formula.mine && priority >= 9, "0 Critical", if(formula.own == formula.me && status == "inbox", "1 Inbox", if(formula.own == formula.me && status == "in-progress", "2 In Progress", if(formula.rev == formula.me && status == "review", "3 Review", if(status == "discuss", "4 Discuss", if(formula.own == formula.me && status == "review", "7 Awaiting Review", if(formula.type == "note", "9 Notes", if(formula.own == formula.me, "5 Your Tasks", if(formula.rev == formula.me, "6 Delegated", if(formula.subscribed, "8 Subscribed", "16 Others"))))))))))))))'
   parent_terminal: if(parent && parent.asFile(), ["done", "cancelled", "failed", "note-archived"].contains(parent.asFile().properties.status), false)
-  nested: formula.own == formula.me && formula.parent_own == formula.me && !formula.parent_terminal
-  nested_any: formula.own != "" && formula.own == formula.parent_own && !formula.parent_terminal
-  status_sec: '["1 Inbox", "2 In Progress", "3 Review", "6 Awaiting Review"].contains(formula.section)'
+  parented_note: formula.type == "note" && if(parent && parent.asFile(), true, false)
+  nested: ((formula.own == formula.me && formula.parent_own == formula.me) || formula.parented_note) && !formula.parent_terminal
+  nested_any: ((formula.own != "" && formula.own == formula.parent_own) || formula.parented_note) && !formula.parent_terminal
+  live: '!formula.blocked && !formula.deferred && ["inbox", "in-progress", "review", "discuss"].contains(status)'
+  important: '!formula.terminal && formula.type != "note" && formula.effective_priority >= 7'
   anc1: if(parent, parent.asFile())
   anc2: if(formula.anc1 && formula.anc1.properties.parent, formula.anc1.properties.parent.asFile())
   anc3: if(formula.anc2 && formula.anc2.properties.parent, formula.anc2.properties.parent.asFile())
@@ -43,12 +45,15 @@ formulas:
   ancs: if(formula.anc1.asLink() == this, [], if(formula.anc2.asLink() == this, [formula.anc1], if(formula.anc3.asLink() == this, [formula.anc2, formula.anc1], if(formula.anc4.asLink() == this, [formula.anc3, formula.anc2, formula.anc1], [formula.anc4, formula.anc3, formula.anc2, formula.anc1]))))
   anc_path: formula.ancs.filter(value).map(if(value.properties.priority, value.properties.priority, 5).toString() + " " + value.basename.replace(/^,/, "")).join(" › ")
   pgroup: if(formula.is_head, if(formula.anc_path != "", formula.anc_path + " › ", "") + formula.seg_self, if(formula.anc_path != "", formula.anc_path, if(formula.anc1.asLink() == this, formula.anc1.basename.replace(/^,/, ""), "no project"))) + ":"
+  sec_group: if((formula.live || formula.important) && formula.ancs.filter(value).length > 0, formula.section + " › " + formula.ancs.filter(value).map(value.basename.replace(/^,/, "")).join(" › "), formula.section)
   later_date: if(formula.section.contains("Later"), date(not_before).format("YYYY-MM-DD"), "")
 properties:
   formula.section:
     displayName: Section
   formula.pgroup:
     displayName: Project
+  formula.sec_group:
+    displayName: Section › project
   formula.type:
     displayName: Type
   reviewer:
@@ -63,26 +68,24 @@ views:
         - formula.mine
         - or:
             - "!formula.nested"
-            - formula.status_sec
+            - formula.live
+            - formula.important
         - "!formula.terminal"
         - '!file.path.contains("/archived/")'
     groupBy:
-      property: formula.section
+      property: formula.sec_group
       direction: ASC
     order:
       - file.name
-      - formula.section
       - status
       - priority
+      - parent
       - owner
       - reviewer
-      - parent
+      - subscribers
       - not_before
       - dependencies
       - due
-      - subscribers
-      - model
-      - effort
     sort:
       - property: formula.later_date
         direction: ASC
@@ -92,10 +95,11 @@ views:
         direction: DESC
     columnSize:
       file.name: 549
-      formula.section: 130
       note.status: 102
-      note.owner: 83
       note.parent: 143
+      note.owner: 83
+      note.reviewer: 87
+      note.subscribers: 70
   - type: table
     name: my projects
     filters:
@@ -114,12 +118,10 @@ views:
       - priority
       - owner
       - reviewer
+      - subscribers
       - not_before
       - dependencies
       - due
-      - subscribers
-      - model
-      - effort
     sort:
       - property: formula.is_head
         direction: DESC
@@ -135,32 +137,32 @@ views:
       file.name: 502
       note.parent: 143
       formula.section: 100
+      note.reviewer: 87
+      note.subscribers: 70
   - type: table
     name: everyone overview
     filters:
       and:
         - or:
             - "!formula.nested_any"
-            - formula.status_sec
+            - formula.live
+            - formula.important
         - "!formula.terminal"
         - '!file.path.contains("/archived/")'
     groupBy:
-      property: formula.section
+      property: formula.sec_group
       direction: ASC
     order:
       - file.name
-      - formula.section
       - status
       - priority
+      - parent
       - owner
       - reviewer
-      - parent
+      - subscribers
       - not_before
       - dependencies
       - due
-      - subscribers
-      - model
-      - effort
     sort:
       - property: formula.later_date
         direction: ASC
@@ -170,16 +172,8 @@ views:
         direction: DESC
     columnSize:
       file.name: 340
-      formula.section: 130
-      status: 100
-      priority: 70
-      reviewer: 120
-      parent: 220
-      not_before: 110
-      due: 110
-      owner: 100
-      model: 90
-      effort: 80
+      note.reviewer: 87
+      note.subscribers: 70
   - type: table
     name: everyone projects
     filters:
@@ -197,12 +191,10 @@ views:
       - priority
       - owner
       - reviewer
+      - subscribers
       - not_before
       - dependencies
       - due
-      - subscribers
-      - model
-      - effort
     sort:
       - property: formula.is_head
         direction: DESC
@@ -218,6 +210,8 @@ views:
       file.name: 433
       note.parent: 143
       formula.section: 130
+      note.reviewer: 87
+      note.subscribers: 70
   - type: table
     name: Unassigned
     filters:
@@ -230,15 +224,13 @@ views:
       - formula.type
       - status
       - priority
+      - parent
       - owner
       - reviewer
-      - parent
       - not_before
       - dependencies
       - due
       - file.ctime
-      - model
-      - effort
     sort:
       - property: formula.effective_priority
         direction: DESC
@@ -247,15 +239,7 @@ views:
     columnSize:
       file.name: 340
       formula.type: 80
-      status: 100
-      priority: 70
-      reviewer: 120
-      parent: 220
-      not_before: 110
-      due: 110
-      owner: 100
-      model: 90
-      effort: 80
+      note.reviewer: 87
   - type: table
     name: Archived
     filters:
@@ -267,12 +251,84 @@ views:
       - parent
       - owner
       - file.mtime
-      - model
-      - effort
     sort:
       - property: file.mtime
         direction: DESC
     limit: 200
     columnSize:
       file.name: 338
+  - type: kanban
+    name: my board
+    filters:
+      and:
+        - formula.mine
+        - or:
+            - "!formula.nested"
+            - formula.live
+            - formula.important
+        - or:
+            - "!formula.terminal"
+            - file.mtime > now() - "7d"
+        - "!formula.blocked"
+        - "!formula.deferred"
+        - formula.type != "note"
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder:
+      - inbox
+      - 
+      - in-progress
+      - review
+      - discuss
+      - done
+    order:
+      - file.name
+      - priority
+      - due
+      - owner
+      - reviewer
+      - formula.type
+      - formula.subscribed
+      - formula.pgroup
+    sort:
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.mtime
+        direction: DESC
+  - type: kanban
+    name: everyone board
+    filters:
+      and:
+        - or:
+            - "!formula.nested_any"
+            - formula.live
+            - formula.important
+        - or:
+            - "!formula.terminal"
+            - file.mtime > now() - "7d"
+        - "!formula.blocked"
+        - "!formula.deferred"
+        - formula.type != "note"
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder:
+      - inbox
+      - 
+      - in-progress
+      - review
+      - discuss
+      - done
+      - cancelled
+    order:
+      - file.name
+      - owner
+      - priority
+      - due
+    sort:
+      - property: formula.effective_priority
+        direction: DESC
+      - property: file.mtime
+        direction: DESC
 newItemFolder: projects-tasks-notes

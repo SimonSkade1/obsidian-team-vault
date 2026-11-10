@@ -6,6 +6,9 @@
    file — for a new `,` file as for a task turned into a project. Nothing inserts it on
    creation: Templater's creation trigger stays off in this vault (setup-member skill).
 
+   The subtasks table `![[subtasks.base]]` is emitted only if the note lacks it: a note created
+   in projects-tasks-notes/ already starts with it (the vault's plugin, team-vault-select-properties).
+
    Properties: the nine vault-wide ones in order — status, priority, parent, owner,
    reviewer, not_before, dependencies, due, subscribers. The "New" button of a base has usually written them
    already (`owner`, `reviewer` and, in a subtasks table, `parent` filled); this block fills in what a file still lacks. Only the keys the file LACKS are
@@ -47,10 +50,8 @@ for (const k of KEYS) {
     else if (fm[k] === undefined) head += k + ":\n";
 }
 if (head !== "") tR += "---\n" + head + "---\n";
+if (!tp.file.content.includes("![[subtasks.base]]")) tR += "\n\n![[subtasks.base]]\n";
 %>
-
-![[subtasks.base]]
-
 
 
 # Purpose / goal clarification / success criteria

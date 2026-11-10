@@ -46,6 +46,8 @@ Read the `status` and `parent` properties across `projects-tasks-notes/`. The tr
 
 Where a note's `parent` is evident but missing, fill it in. Where `parent` and the existing folder placement disagree and neither is clearly right, **flag it — do not guess** (§6). Terminated items (`done`/`cancelled`/`failed`/`note-archived`) stay in the tree as history; the one move a status triggers is archiving (§4, item 4).
 
+**Status values.** Check every `status` against the allowed values in `.claude/CLAUDE_shared.md`; the bases count any other value as open work. In files not excluded by §2, fix a value whose meaning is unambiguous in place: case, spacing or spelling (`Done`, `in progress`, `canceled`), or a clear synonym (`completed` → `done`, `wip` → `in-progress`, `todo` → empty). Flag any other value (§6). For a grouping label such as `meeting-matilda`, the recommendation is a `,` project of that name as the item's `parent`, with the status left empty.
+
 **Temporary, until 2026-11-01 (then delete this paragraph):** the property `stakeholder` was renamed `reviewer` on 2026-10-04, and members whose templates are older still write `stakeholder:`. Grep `projects-tasks-notes/` for frontmatter lines starting `stakeholder:` and, in each file not excluded by §2, rename that key to `reviewer:` in place (same position, value unchanged). If a file already has a `reviewer:` key, flag it instead (§6).
 
 ## 4. Restore the folder structure
@@ -55,7 +57,7 @@ Per the folder-structure rule in `.claude/CLAUDE_shared.md` — reread it rather
 1. A `,` project gets its own folder — named like the note without its `,` prefix — as soon as **any** file names it as `parent`, whatever that child's prefix; the folder holds the project note itself plus its children (recursively). Folders are never collapsed back when children terminate.
 2. Notes and tasks go in the folder of the innermost project they are specific to; items serving several projects, or consumed vault-wide by fixed paths in skills and scripts, rise to the nearest common ancestor or the `projects-tasks-notes/` root. Parentless items stay in the `projects-tasks-notes/` root.
 3. `handoffs/` subfolders move with their goal folder. A handoff whose goal has no folder (a goal with no subgoals) belongs in the nearest ancestor `handoffs/`, falling back to `projects-tasks-notes/handoffs/`.
-4. Finished trees go to `projects-tasks-notes/archived/`: a parentless item whose status is terminal moves there, a project with its folder (if it has one) — but only once every task and project in its tree is terminal too (notes — a `;` prefix or `status: note` — don't count), so open work never disappears from the views. A tree in `archived/` that no longer qualifies moves back out.
+4. Finished trees go to `projects-tasks-notes/archived/`: a parentless item whose status is terminal moves there, a project with its folder (if it has one) — but only once every task and project in its tree is terminal too (notes — `status: note` — don't count), so open work never disappears from the views. A tree in `archived/` that no longer qualifies moves back out.
 
 Use `mv` (wikilinks are basename-based and survive it). Create folders as needed; `mkdir -p` the whole target path in one go.
 

@@ -383,8 +383,8 @@ def dependency_cells(ctx, rows):
 
 
 def child_type(name, fm):
-    """Same rule as the bases' `type` formula: status `note` / `note-archived` or a `;` prefix = note."""
-    if (fm.get('status', '') or '').strip() in ('note', 'note-archived') or name.startswith(';'):
+    """Note rule as in the bases' `type` formula: status `note` / `note-archived` = note (a `;` prefix is orientation only)."""
+    if (fm.get('status', '') or '').strip() in ('note', 'note-archived'):
         return 'note'
     return 'project' if name.startswith(',') else 'task'
 
@@ -476,7 +476,8 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    ap = argparse.ArgumentParser(description='Read an Obsidian note with embeds expanded.')
+    # allow_abbrev=False: the Discord bot's allowlist denies `*--vault*`, which `--va` would slip past
+    ap = argparse.ArgumentParser(description='Read an Obsidian note with embeds expanded.', allow_abbrev=False)
     ap.add_argument('path', help='vault-relative path or bare note name, optional #Heading / #^blockid')
     ap.add_argument('--vault', default=None)
     ap.add_argument('--max-depth', type=int, default=4)
@@ -508,6 +509,8 @@ def main():
         rel, note = resolve_target(spec, files)
     if rel is None:
         sys.exit(f"error: could not resolve '{spec}' in vault {vault}")
+    if not os.path.normpath(vault / rel).startswith(os.path.join(str(vault), '')):  # e.g. ../private-inbox/…
+        sys.exit(f"error: {spec} is outside the vault {vault}")
 
     if kind_of(rel) != 'md':
         sys.exit(f"error: {rel} is not markdown — use the Read tool directly")

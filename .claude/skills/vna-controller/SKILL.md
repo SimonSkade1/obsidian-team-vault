@@ -63,6 +63,8 @@ The loop goes on when the agent left the item `done`, or when an executor left i
 
 Every other outcome needs exception handling: the item is `exception` (the agent threw an exception), or its state makes no sense. So does a run that you yourself see going really wrong. In these cases read `.claude/references/vna-exception-handling.md` and handle the case.
 
+A user interrupt in this chat (`[Request interrupted by user]`) can kill the agents running at that moment, without a notification. After one, run `tail -n 1 <output_file> | grep -c 'Request interrupted by user'` for each running agent, with the `output_file` from its spawn result; it prints only a count. `1` means the agent was killed partway: handle its item as an exception.
+
 ## The checks: checkUsage & checkOwnContext
 
 Run both before you spawn.
